@@ -1,0 +1,30 @@
+body
+{
+    font-size: 100%;
+    font-family: Roboto,Arial,Helvetica,Sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    counter-reset: list-count;
+    overflow-x: hidden;
+    text-align: justify;
+}
+section article p
+{
+    font: 400 1rem/1.7 Roboto,Arial,Helvetica,Sans-serif;
+    color: #494949;
+    letter-spacing: -0.47px;
+    margin: 25px 0;
+    text-align: justify !important;
+}
+section article h3 
+{
+    display: block;
+    font-size: 1.17em;
+    margin-block-start: 1em;
+    margin-block-end: 1em;
+    margin-inline-start: 0px;
+    margin-inline-end: 0px;
+    font-weight: bold;
+    margin: 50px 0 10px;
+    font: 700 1.7rem/1.5 Roboto,Arial,Helvetica,Sans-serif;
+}

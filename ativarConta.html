@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link rel="stylesheet" href="css/ativarconta.css">
+    <title>Saory ativar conta</title>
+</head>
+<body>
+    <div class="ativar-conta bg-light">
+        <div class="titulo col-12 text-center text-light bg-primary p-1">
+            Quase la!
+        </div>
+        <div class="body-ativar container">
+            <h5 class="text-justify col-12 mt-5">Enviamos um codigo de verificação para o seu email<br><small>Para continuar incira o codigo no campo abaixo</small></h5> 
+            <div class="form-group col-12 mt-5">
+                <input id="cod-verificacao" type="text" class="form-control" placeholder="Codigo de verificação">
+            </div>
+            <button class="btn btn-primary col-12 mr-auto ml-auto mt-3" id="btn-ativar-conta">Ativar minha conta</button>
+            
+        </div>
+    </div>
+    <script src="js/jquery.js"></script>
+    <script src="js/functions_expo.js"></script>
+    <script src="js/wsApi.js"></script>
+    <script src="js/expo_produto.js"></script>
+        
+    <script>
+        $("#btn-ativar-conta").click(function(){
+            app.chave = "ativarUsuario";
+            app.bau = $("#cod-verificacao").val();
+            usuario.salvar();
+            ws.send(JSON.stringify(app));
+            console.log(app);
+        });
+        ws.message(function(msg){
+            let retorno = JSON.parse(msg.data);
+                    if( retorno.return!=null && 
+                        retorno.return !=undefined
+                        )
+                    {
+                        switch(retorno.return){
+                            case "ativarUsuario"://login retornou->login sucesso
+                                console.log(retorno.estado);
+                                if(retorno.estado==9){
+                                    alertar("O Codigo de verificação esta incorreto");
+                                }else if(retorno.estado==200){
+                                    alertar("Seu codigo foi verificado. Aguarde...");
+                                    setTimeout(function(){abrirUrl("expo_produto.html")},2000);
+                                }else{
+                                    alertar("Erro faça login novamente!");
+                                    setTimeout(function(){abrirUrl("login.html")},2000);
+                                }
+                            break;
+                            
+                        }
+                        
+                    }else if(retorno.Error!=undefined && retorno.Error!=null){//correndo possiveis erros
+                       alertar("Ops algo esta errado");
+                    }
+        })
+    </script>
+</body>
+</html>

@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+    <head>
+        <title>Saory</title>
+        <meta charset="UTF-8">
+        <link rel="manifest" href="manifest.json">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="stylesheet" href="css/expo_prod.css">
+        <link rel="stylesheet" href="css/bootstrap-4.3.1-dist/css/bootstrap.min.css">
+        <link rel="stylesheet" href="css/fontawesome/fontawesome.css">
+        <link rel="icon" type="imagem/ico" href="img/logobranco.ico" />
+        <script src="https://kit.fontawesome.com/2912494906.js" crossorigin="anonymous" SameSite="None" secure></script>
+        <script src="js/jquery.js"></script>
+        
+    </head>
+    <body>
+      
+    <!--MENU-->
+    <div class="navbar bg-primary col-12 mb-2" style="height: 60px"></div>
+    <nav class=" z-index-5 position-fixed navbar navbar-principal navbar-lg-expand navbar-light col-12 border" style="height: 60px;">
+        <i class="text-x-large fa fa-bars notificacao  text-light btn-nav"></i>
+        <i class="text-x-large fa fa-home notificacao  text-light inicio"></i>
+        <i class="text-x-large fa fa-search text-light notificacao ml-5 mr-n-5 pesquisar"></i>
+        <i class="text-x-large fa fa-bell btn-notificacao notificacao text-light"><span class="badge badge-primary text-xx-small notificacao-numero"></span></i>
+        <i class="text-x-large fa fa-shopping-cart text-light notificacao btn-show-shoppingcart"></i>
+    </nav>
+    <div class="tela-menu bg-light position-fixed z-index-6 text-light">
+        <div class="tela-menu-header bg-primary centralizar" style="height: 60px">
+            <i class="fa fa-arrow-left center text-x-large back-menu"></i> <span class="text-x-large">Menu</span>
+        </div>
+        <div class="container">
+            <fieldset class="perfil text-center border">
+                <legend>
+                    <img class="img-fluid img-perfel" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEgAAABICAMAAABiM0N1AAAAY1BMVEX///8BAQMAAAD8/PzT09P09PRbW1uFhYXJycmKioo/Pz/w8PDf39+4uLirq6sdHR1tbW3AwMBjY2MJCQqWlpYSEhKysrKkpKRVVVVMTEx9fX0vLy8YGBiQkJB1dXbl5eUoKChL8FjAAAACLUlEQVRYhcXX25KCMAwG4JICcgY5qMC68v5PuUVwlbaxJOvM9sILBr8pJU1/hHg/jvVXE7a+4y7nyEtYRnNN/8AEIYC3DGV937hO1j2YlTpIngOvzp3qOGsV6M6dyulQaDqzFFGdzObMEhU62CGP/HAJBh2IUIlB30Sow6Dqv2b0sTWqMKglQujrPxKhEwZlRGjAoBPN8RFH7ZGABEU4ROtvyJ5l7FpLN1qgngihdXQmQmg/Ivft2iqRJ4RVJLkehUhtyw0d2RHiYoNiBnS0HUes03Y0JHJ7XIaxTZgTMosSrjxHiGkjQcJ1tiUAHa2BbMatfCakkh+10kDICmZK/VRSBEzKh0Q9jF81KvnVKhkFScPKkgc1jW5OMTJN5y0fKZBR2fn6SPW6S7N6fURaGskfi6z+OcZFEY/we2HaTaUtvLz2NR9vLrQ7Vl2eesD69QvVnxydsnUqz2m9YW7TPmahRnQL+/uZhULK6kZzZsm+6Fi2eiNZ+0FBdpBs0nCgxnQsvX6PZAY4+8nqhGoDor6yFTJSDhrRXJJeS5x3docKDcLisBPSAzxvrS2rTS/rFdKLG/uIcUKlBnlcSK9t7PvMCenRa+JCkwb1XEjP3ViudkJ69mIXpH72fmyLfGzTSi5kHJTuA9aiAFx0Zw5C2zPejaj0ZT/ZZBQnsENb7kni6N35L/1iuMB2PCPJOi5D4e/73JJZlJ+vQx32Y9k1ntd8lWMf1sP1nEeZnfgBmdQYV2y6Es8AAAAASUVORK5CYII=" style="height: 80px; width: 80px; border-radius: 100%;">
+                </legend>
+                <span class="h5 text-dark name-user">Usuario</span>
+                <div class="op-perfil text-justify text-dark text-larger">
+                    <ul>
+                        <li class="my-1"><a href="curtidos.html">Itens que gostei</a></li>
+                        <li class="my-1"><a href="acompanharpedidos.html">Acompanhar pedidos</a></li>
+                        <li class="my-1">Minhas formas de pagamento <i class="fa fa-credit-card"></i></li>
+                        <li class="my-1">Meu local de entrega <i class="fa fa-home"></i></li>
+                        <li class="my-1">Configurações da minha conta <i class="fa fa-key" aria-hidden="true"></i></li>
+                        <li class="my-2" onclick="abrirUrl('ajuda.html')">Ajuda</li>
+                        <li class="my-1" onclick="logOut()">Sair <i class="fa fa-sign-out-alt"></i></li>
+                    </ul>
+                </div>
+            </fieldset>
+
+        </div>
+
+    </div>
+
+    
+    <!--FIM DE MENU-->
+    
+        
+        <div class="catalogo container-fluid z-index-1 row" id="catalogo">
+                
+            
+        </div>
+                
+        <div class="expo-block p-auto position-fixed z-index-6" data-id="1">
+            <span class="expo-back text-primary"><i class="fa fa-arrow-left"></i></span>
+            <div class="expo-image-destaque">
+                <img class="expo-img" src="">
+            </div>
+            <hr>
+            <div class="expo-nome m-auto text-primary">
+                
+            </div>
+            <div class="expo-descricao m-auto">
+                 
+            </div>
+            <div class="expo-preco">
+                <span class="preco-ant"></span>
+                <span class="preco-atual"></span>
+            </div>
+            <div class="expo-avaliacao">
+                <i class="fas fa-star"></i>
+                4.5
+            </div>
+            <div class="expo-qtd-compra">805+ compraram este produto</div>
+            <div class="expo-btn-add">
+                <button class="btn btn-outline-primary col-12 col-lg-3 bg-light expo-btn-add-to-cart">Levar ao carrinho</button>
+            </div>
+            <hr>
+            <div class="expo-comentarios-block mt-5">
+                <div class="expo-comentarios-title topico bg-primary">Comentarios relacionados ao produto</div>
+                <div class="expo-comentarios">Não há comentarios sobre este produto</div>
+            </div>
+            <hr>
+            <div class="expo-vendedor-block">
+                <div class="expo-vendedor-title topico bg-primary">Sobre a loja Marimarke</div>
+                <div class="expo-vendedor-tot-venda">25.000,00+ vendas realizadas</div>
+                <div class="expo-vendedor-nota"><i class="fa fa-star"></i> 3.0</div>
+            </div>
+            
+            
+            
+        </div>
+        <div class="expo-slide-img z-index-7" id="slide">
+                <div class="expo-slide-img-destaque text-nowrap">
+                    <img class="img-fluid h-100 position-absolute expo-img-pricipal" src="">
+                    <img class="img-fluid h-100 next" src=''>
+                </div>
+                <div class="expo-slide-img-aside">
+                    
+                </div>
+                <div class="expo-slide-img-close mb-5"><i class="fa fa-times-circle h4 text-primary"></i></div>
+            </div>
+
+        <div class="expo-lista-compra bg-light z-index-7">
+                <div class="expo-lista-compra-titulo bg-primary text-light mt-5">
+                     <span class="float-left text-nowrap"> <i class="expo-total-compra">0</i></span>
+                </div>
+                <div class="expo-lista-compra-itens">
+                    <table class="table">
+                        <th>
+                            
+                                <td><!--Img--></td><td>Item</td><td>R$</td><td><!--Retirar--></td>
+                            
+                        </th>
+                        <tbody class="expo-body-lista-compra">
+                                
+                        </tbody>
+                    </table>
+                    <button class="col-12 btn btn-primary btn-f-compra">Finalizar</button>
+                </div>
+                <!--BTN FECHA O CARRINHO-->
+                <div class="expo-ico-carrinho-hide bg-light border text-primary mb-5">
+                        <i class="fa fa-chevron-circle-right mt-1"></i>
+                </div>
+                
+
+            </div>
+            <!--BTN ABRE O CARRINHO-->
+            <div class="expo-ico-carrinho-show btn-show-shoppingcart bg-light border text-primary mb-5 z-index-6">
+                    <i class="fa fa-chevron-circle-left mt-1"></i>
+            </div>
+            <!--continuar compra -->
+            <div class="expo-box-tamanho z-index-7 col-lg-12">
+                    <div class="expo-tamanho-body m-auto p-1">
+                        <i class="text-xx-large position-absolute centralizar btn-close-tamanho" style="top:5px; right: 15px; height: 30px; width: 30px;">x</i>
+                        <div class="expo-tamanho-title bg-primary">Qual o tamanho mais adequado?</div>
+                        <select class="form-control expo-tamanho-item">
+                            
+                        </select>
+                        R$ <div class="preco"></div>
+                        <div class="expo-tamanho-title bg-primary mt-4">Quantos?</div>
+                        <input type="number" class="form-control expo-quantidade" value="1" name="" id="">
+                        <button class="btn btn-primary expo-btn-finalizar col-12" data-id="1">Confirmar</button>
+                    </div>
+                </div>
+                <div class="compartilhar bg-light position-fixed pt-2 z-index-8">
+                        <span class="close-compartilhar col-12"></span>
+                        <div class="share-midia">
+                            <div class="midia-header text-center bg-light centralizar m-auto border"><i class="fa fa-share text-primary"></i></div>
+                            <div class="midia-body text-primary">Facebook</div>
+                        </div>
+                        <div class="share-midia">
+                            <div class="midia-header text-center bg-light centralizar m-auto border"><i class="fa fa-share text-primary"></i></div>
+                            <div class="midia-body text-primary">Whatsapp</div>
+                        </div>
+                        <div class="share-midia">
+                            <div class="midia-header text-center bg-light centralizar m-auto border"><i class="fa fa-share text-primary"></i></div>
+                            <div class="midia-body text-primary">Instagram</div>
+                        </div>
+                        <div class="share-midia">
+                            <div class="midia-header text-center bg-light centralizar m-auto border"><i class="fa fa-share text-primary"></i></div>
+                            <div class="midia-body text-primary">Twitter</div>
+                        </div>
+                </div>
+        
+        <!--PESQUISA-->
+        <div class="tela-pesquisa position-fixed bg-light z-index-6">
+                <div class="input-group div-pesquisa bg-primary p-3">
+                    <i class="parar-pesquisa fa fa-arrow-left input-group-text text-x-large mr-2 bg-primary text-light"></i>
+                    <input type="search" id="pesquisa" class="form-control fom-control-lg " placeholder="Busca" aria-label="Busca" aria-describedby="basic-addon1">
+                    <div class="input-group-append">
+                        <span class="input-group-text fa fa-search text-x-large text-light bg-transparent" id="basic-addon1"></span>
+                    </div>
+                </div>
+                <div class="">
+                    <table class="table pesquisa-res">
+                       
+                    </table>
+                </div>
+        </div>
+        <!--NOTIFICAÇÃO-->
+        <div class="tela-notificacao position-fixed bg-light z-index-6">
+            <div class="text-small">Suas notificações aparecerão aqui</div>
+            <div class="">
+                <table class="table notificacao-body">
+                    
+                </table>
+                
+            </div>
+        </div>
+        <!--PAGAMENTO-->
+        <div class="tela-finalizar-pagamento bg-light z-index-8 position-fixed">
+            <div class="cabecalho-janela tela-menu-header bg-primary centralizar text-light text-x-large">
+                <i class="fa fa-window-close back" aria-hidden="true"></i><span>Terminar compra</span>
+            </div>
+                <p>
+                    
+                </p>
+                  <!--<div class="collapse show" id="pg-endereco">
+                    <fieldset class="card card-body">
+                      <legend>Entrega</legend>
+                      <fieldset>
+                          <legend class="text-small">Nome e sobrenome</legend>
+                          <input class="btn col-12 border-bottom" placeholder="Nome para recebimento" type="text" name="nome" id="e-nome">
+                      </fieldset>
+                      <fieldset>
+                          <legend class="text-small">CEP</legend>
+                          <input class="btn col-12 border-bottom" placeholder="CEP" type="text" name="cep" id="e-cep">
+                      </fieldset>
+                      <fieldset>
+                          <legend class="text-small">Estado</legend>
+                          <input class="btn col-12 border-bottom" placeholder="Estado" type="text" name="uf" id="e-uf" disabled>
+                      </fieldset>
+                      <fieldset>
+                          <legend class="text-small">Cidade</legend>
+                          <input class="btn col-12 border-bottom" placeholder="Cidade" type="text" name="cidade" id="e-cidade" disabled>
+                      </fieldset>
+                      <fieldset>
+                          <legend class="text-small">Bairro</legend>
+                          <input class="btn col-12 border-bottom" placeholder="Bairro" type="text" name="bairro" id="e-bairro" disabled>
+                      </fieldset>
+                      <fieldset>
+                          <legend class="text-small">Rua</legend>
+                          <input class="btn col-12 border-bottom" placeholder="Rua" type="text" name="rua" id="e-rua" disabled>
+                      </fieldset>
+                      <fieldset>
+                          <legend class="text-small">Numero</legend>
+                          <input class="btn col-12 border-bottom" placeholder="Numero" type="text" name="numero" id="e-numero">
+                      </fieldset>
+                      <fieldset>
+                          <legend class="text-small">Dados opcionais</legend>
+                          <input class="btn col-12 border-bottom" placeholder="Dados opcionais" type="text" name="opcional" id="e-opcional">
+                      </fieldset>
+                      <fieldset>
+                          <legend class="text-small">Este é seu trabalho ou sua casa?</legend>
+                          <input type="radio" name="tc" id="e-trabalho" value="trabalho"><label for="e-trabalho">Trabalho</label><input type="radio" name="tc" id="e-casa" value="casa"><label for="e-casa">casa</label>
+                      </fieldset>
+                    </fieldset>
+                  </div>
+                <p>
+                    <button id="pg-continuar" class="btn btn-primary col-12 text-light text-larger" type="button" data-toggle="collapse" data-target="#pagamento,#pg-endereco" aria-expanded="false" aria-controls="pagamento">
+                        Continuar &nbsp;<i class="fa fa-arrow-alt-circle-right" aria-hidden="true"></i>
+                    </button>
+                </p>-->
+                <div class="collapse show" id="pagamento">
+                    <legend>Pagamento</legend>
+                    <fieldset class="card card-body col-12 m-auto">
+                        <fieldset>
+                            <legend class="text-larger">Nome como está no cartão</legend>
+                            <div class="form-group">
+                                <input id="pg-nome" type="text" class="form-control" placeholder="Nome gravado no cartão">
+                            </div>
+                        </fieldset>
+                        <fieldset>
+                            <legend class="text-larger">Bandeira</legend>
+                            <div class="form-group">
+                                <select name="bandeiras" id="pg-bandeira" class="form-control">
+                                    <option value="amex">Amex</option>
+                                    <option value="aura">Aura</option>
+                                    <option value="diners">Diners</option>
+                                    <option value="discover">Discover</option>
+                                    <option value="elo">Elo</option>
+                                    <option value="hipercard">Hipercard</option>
+                                    <option value="jcb">JCB</option>
+                                    <option value="mastercard">Mastercard</option>
+                                    <option value="visa">visa</option>
+                                </select>
+                            </div>
+                        </fieldset>
+                        <fieldset>
+                                <legend class="text-larger">Numero do cartão</legend>
+                                <div class="form-group">
+                                    <input class="form-control col-12" placeholder="Numero do cartão" type="number" name="numero-cc" id="pg-numero">
+                                </div>
+                        </fieldset>
+                        
+                        <fieldset>
+                                <legend class="text-larger">Vencimento</legend>
+                                <div class="form-group row">
+                                <select class="form-control col" name="" id="pg-vencimento-mes">
+                                        <option value="01">Janeiro</option>
+                                        <option value="02">Fevereiro</option>
+                                        <option value="03">Março</option>
+                                        <option value="04">Ablil</option>
+                                        <option value="05">Maio</option>
+                                        <option value="06">Junho</option>
+                                        <option value="07">Julho</option>
+                                        <option value="08">Agosto</option>
+                                        <option value="09">Setembro</option>
+                                        <option value="10">Outubro</option>
+                                        <option value="11">Novembro</option>
+                                        <option value="12">Dezembro</option>
+                                    </select>
+                                    <select class="form-control col" name="" id="pg-vencimento-ano">
+                                        <option value="2020">2020</option>
+                                        <option value="2020">2021</option>
+                                        <option value="2020">2022</option>
+                                        <option value="2020">2023</option>
+                                        <option value="2020">2024</option>
+                                        <option value="2020">2025</option>
+                                        <option value="2020">2026</option>
+                                        <option value="2020">2027</option>
+                                        <option value="2020">2028</option>
+                                        <option value="2020">2029</option>
+                                        <option value="2020">2030</option>
+                                        <option value="2020">2031</option>
+                                    </select>
+                                </div>
+                        </fieldset>
+                        <fieldset>
+                            <legend class="text-larger">Digito verificador</legend>
+                            <div class="form-group">
+                                    <input class="form-control col-12" type="number" name="codigo-cc" id="pg-verificador" placeholder="Digito verificador">
+                            </div>
+                            
+                        </fieldset>
+                        <button class="col-12 text-larger btn btn-primary mt-3 btn-pg-finalizar">
+                            Finalizar compra
+                        </button>
+                        
+                    </fieldset>
+                </div>
+            
+                
+
+        </div>
+        
+        <footer id="rodape">
+            Rodapé
+        </footer>
+<script src="js/functions_expo.js"></script>
+<script src="js/wsApi.js"></script>
+<script src="js/expo_produto.js"></script>
+<script src="css/bootstrap-4.3.1-dist/js/bootstrap.js"></script>
+<script>
+        if(localStorage.getItem("usuario")!=undefined &&localStorage.getItem("usuario")!=null && localStorage.getItem("usuario")!=""){
+            app = JSON.parse(localStorage.getItem("usuario"));
+            vaParaTela(".catalogo, .navbar, .expo-ico-carrinho-show");
+
+             produto.getCatalog();
+        }
+        else{
+            abrirUrl("login.html");
+            console.log('não logado');
+        } 
+$(window).ready(function(){
+   
+    
+    $(".name-user").text(JSON.parse(localStorage.getItem("usuario")).nome);
+     
+    if("serviceWorker" in navigator){
+        navigator.serviceWorker.register('serviceWorker.js').then(function(){
+            console.log("Service worker registrado");
+             
+        }).catch(function(e){
+            
+        });
+        notificacao.get();
+    }
+       
+    ws.message(function(msg){
+        let retorno = JSON.parse(msg.data);
+        if( retorno.return!=null && 
+            retorno.return !=undefined
+            )
+        {
+            switch(retorno.return){
+                case "getCatalog"://retorno trasendo o catalogo
+                    produto.add(retorno.catalogo);
+                    app.numeroCatalogo = parseInt(app.numeroCatalogo+1); 
+                break;
+                case "pag":
+                    console.log(retorno.estado);
+                    pagamento.finalizar(retorno);
+                    
+                break;
+                case "getPesquisa":
+                    //console.log(retorno.resultado[0]);
+                    $(".pesquisa-res").html(" ");
+                    
+                    $.each(retorno.resultado,function(index, value){
+                        produto.todos[value.id] = value;
+                        let html = $("<tr/>",{"id":value.id,click:function(){produto.exibir($(this).attr("id"));$(".navbar").fadeOut("slow");}})
+                            .append(
+                                '<td class="expo-lista-compra-img-item"><img src="https://localhost/loja_fer/app/controler/img_fornec.php?img='+value.id_img.split(',')[0]+'" class="img-fluid expo-img-aux"></td><td class="text-primary">'+value.nome+'<br><small>'+value.descricao+'<br>R$'+value.preco_atual+'</small></td>'
+                            );
+                        $(".pesquisa-res").append(html);
+                    });
+                        //console.log(retorno.resultado[i].nome)
+                   
+                break;
+                case "getNotificacao":
+                    notificacao.retorno(retorno.resultado);
+                break;
+
+            }
+
+            
+            
+            
+        }else if(retorno.Error!=undefined && retorno.Error!=null){//correndo possiveis erros
+            switch(retorno.Error){
+                
+            }
+        }
+    });
+    
+});
+
+
+        
+
+        </script>
+        
+        
+    </body>
+</html>

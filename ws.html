@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <script src="C:\Users\cidinha\Desktop\Edilaine\pc edilaine\blog\js\jquery.js"></script>
+    <style>
+        input[value="adao"]{
+            color:red;
+            border-radius: 100%;
+        }
+    </style>
+</head>
+<body>
+    <button class="teste">teste</button>
+    <input type="text" name="" id="" value="adao">
+    <script>
+        //$(".teste").click(function(){});
+        
+    var con = {
+        
+        data: {
+            user: 'An�nimo',
+            text: null,
+            messages: [],
+            ws: null,
+        },
+        create:function(){
+            this.conect();
+        },
+        conect:function(onopen){
+            var self = this;
+            self.ws = new WebSocket("ws://localhost:8080");
+            self.ws.onopen=function(){
+                alert("Conectado");
+                //if (onOpen) {
+                   // onOpen();
+                //}
+            };
+            self.ws.onerror = function() {
+                alert('N�o foi poss�vel conectar-se ao servidor');
+            };
+            self.ws.onmessage = function(e) {
+                var ob = JSON.parse(e.data);
+                console.log(ob);
+               // var arr[];
+                for(var [key, value] of Object.entries(ob)){
+                    if(key==0){
+                        for(var [key1, value1] of Object.entries(ob[key])){
+                            console.log("percorrendo obj na posição 0");
+                            console.log(key1+"->"+ value1);
+                            console.log("fim de obj na posição 0 ");
+                            if(key1=="metodo"){//retorno tipo de metodo
+                                switch(value1){//aqui vejo qual metodo sera executado
+                                    case "getCatalog":
+                                        console.log("OB[1] é igual: ")
+                                        console.log(ob[1]);
+                                        for(var [key2, value2] of Object.entries(ob[1])){//ob na posição 1 traserá o catalogo de produtos
+                                            console.log("----------Catalogo de produtos----------");
+                                            console.log(key2+"->"+value2.nome);
+                                            console.log("----------fim de catalogo de produto----------");
+                                        }
+                                    ;
+                                }
+                                
+                            }
+                        }
+                    }
+                    console.log(key+"->"+ value);
+                }
+                //console.log(ob.length);
+                //console.log(JSON.parse(e.data));
+                
+                
+            };
+            $(".teste").click(function(){
+                self.ws.send(JSON.stringify({
+                    chave:"getCatalog",
+                    
+                }));
+            });
+            
+           
+        },
+        
+        
+    }
+    $(document).ready(function(){
+        
+    });
+    </script>
+    
+</body>
+</html>

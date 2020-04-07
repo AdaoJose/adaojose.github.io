@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Acompanhar Pedidos!!!</title>
+    <link rel="stylesheet" href="css/expo_prod.css">
+</head>
+<body>
+    <script src="js/jquery.js"></script>
+    <script src="js/expo_produto.js"></script>
+    <script src="js/functions_expo.js"></script>
+    <script>
+        let html = '<div class="row bg-light carregando col-12"><div class="spinner-grow text-primary text-center m-auto centralizar" role="status" style="height: 150px; width: 150px;"><span class="sr-only">Loading...</span></div></div>';
+                tela.name = "acompanhar-pedidos";
+                tela.titulo = "Acompanhar Pedidos";
+                tela.construir();
+                tela.voltar = true;
+                tela.append(html);
+                tela.show();
+                $(".fa-arrow-left").click((e)=>{history.back()});
+                var myHeaders = new Headers();
+                myHeaders.append("AppKey", APP_KEY);
+                myHeaders.append("AppId", APP_ID);
+                myHeaders.append("Content-Type", "application/json");
+                
+                var raw = JSON.stringify({ user:JSON.parse(localStorage.getItem("usuario"))});
+                
+                var requestOptions = {
+                  method: 'POST',
+                  headers: myHeaders,
+                  body: raw,
+                  redirect: 'follow'
+                };
+                let urlAlvo = URL_SERVER_BASE+"api/view/purchaseditems";
+                fetch(urlAlvo, requestOptions)
+                  .then(response => response.json())
+                  .then(e => {
+                    console.log(e);
+                    tela.limparPainel();
+                    for(var [key, value] of Object.entries(e.purchaseditems)){//correndo o Json retorno
+                        let html = "<div class='col-12 border mt-3'><div class='col-12 text-light bg-primary text-large title'>Pedido N° "+value.cart_cod+"</div> <div class='date text-x-small'>"+value.date+"<div> <div class='col-12 text-large border'> Status: <span class='text-small bg-warning p-1'>"+((value.status==0)?"Aguardando saida":"Seu pedido ja saiu da loja")+"</span></div> <div class='produtos col-12 text-large'> Produto(s): "+(value.product).replace(',' , ', ')+"</div> </div>"
+                        tela.append(html+"<br>");
+                    }
+                  })
+                  .catch(error => {
+                      alertar("Parece que você esta com problemas de conexão :(");
+                  });
+        
+        let dataOBJForSend = JSON.stringify({ user:JSON.parse(localStorage.getItem("usuario"))});
+        
+    </script>
+    
+</body>
+</html>

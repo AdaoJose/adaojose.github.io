@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link rel="stylesheet" href="css/alternativo.css">
+    <title>Alternativo</title>
+</head>
+<body>
+   <div class="corpo p-5">
+       <form action="" method="post" enctype=multipart/form-data>
+       <div class="foto border">
+            <input id="foto_prod" type="file" name="foto_produto[]" class="input-foto" multiple>
+            <i class="fa fa-camera ico-camera"></i>
+       </div>
+       <output id="list" class="mb-5"></output>
+       <div class="form-group">
+           <input type="text" name="nome" class="i-nome form-control" placeholder="Nome do produto">
+       </div>
+       <div class="form-group">
+            <textarea name="descricao_prod" id="desc_prod" class="form-control" placeholder="Descrição para o produto" cols="30" rows="5"></textarea>
+        </div>
+        <div class="form-group">
+            
+        </div>
+        <fieldset class="form-group row p-2 border p-3 estoque">
+            <legend class="text-center">Estoque</legend>
+            
+            
+            
+        </fieldset>
+        <button class="btn-estoque-add btn btn-success col mb-5">Outro tamanho</button>
+        <button type="submit" class="Finalizar btn btn-primary col-12">Finalizar</button>
+    </form>
+   </div>
+
+
+   <script src="../js/jquery.js"></script>
+   <script>
+       var tot_estoque_add = 1;
+       function estoque_add(){
+           
+           let html = '<label for="tamanho" class="d-md-none mt-1">Tamanho do produto</label>'+
+           '<select type="text" name="tamanho" class="form-control i-tamanho col-12 col-md-5 mr-5" placeholder="Valor">'+
+                '<option value="p">P</option>'+
+                '<option value="m">M</option>'+
+                '<option value="g">G</option>'+
+                '<option value="gg">GG</option>'+
+            '</select>'+
+            '<label for="quantia" class="d-md-none mt-1">Quantidade de produtos deste lote</label>'+
+            '<input type="text" name="quantia" id="quantia" class="form-control i-estoque col-12 col-md-6" placeholder="Quantia em estoque">'+
+            '<label for="valor-compra" class="d-md-none mt-1">Valor pago neste lote</label>'+
+            '<input type="number" name="valor-compra" id="valor-compra" placeholder="Valor que paguei" class="form-control col-12 col-md-5 mr-5 mt-1">'+
+            '<label for="valor-venda" class="d-md-none mt-1">Valor para vender este lote</label>'+
+            '<input type="number" name="valor-venda" id="valor-venda" class="form-control i-valor col-md-6 mt-1" placeholder="Valor que pretendo vender">'+
+            '<label for="proco_unitario" class="d-md-none mt-1">Preço unitario do produto</label>'+
+            '<input type="number" name="preco_unitario" class="form-control i-valor col-md-6 mt-1" placeholder="Valor da unidade do produto" disabled="true">';
+           html = $("<div/>",{'id':"tamanho-quantidade",'class':'row mt-5'}).append(html);
+           if(tot_estoque_add<=4){
+            $(".estoque").append(html);
+            tot_estoque_add++
+           }else{
+            alert("Só existem 4 tipos de tamanhos definidos");
+           }
+       }
+       estoque_add();
+        $(".btn-estoque-add").click(function(e){
+            e.preventDefault();
+            estoque_add();
+            
+
+            //console.log(e.target) ;
+            return(false);
+        });
+        var imgs = []; //recebe as imagens em formato de dataUrl base64
+        function handleFileSelect(evt) {
+            var files = evt.target.files; // FileList object
+            
+            // Loop through the FileList and render image files as thumbnails.
+            for (var i = 0, f; f = files[i]; i++) {
+        
+              // Only process image files.
+              if (!f.type.match('image.*')) {
+                continue;
+              }
+        
+              var reader = new FileReader();
+        
+              // Closure to capture the file information.
+              reader.onload = (function(theFile) {
+                return function(e) {
+                    
+                    
+                        let imgDestaque = $("<img/>",{'classs':'img-fluid img-destaque', 'src':e.target.result});
+                        $('.foto').html('').append(imgDestaque);
+                    
+                    let html = 
+                            $("<img/>",{
+                                class:"img-fluid img-aux-perfil",
+                                src:e.target.result,
+                                click:function(){
+                                    console.log($(this).parent('output').siblings(".foto").children('img'));
+                                    $(this).parent('output').siblings(".foto").children('img').attr("src",$(this).attr("src"));
+                                    $(".img-aux-perfil")
+                                        .not(this)
+                                        .each(
+                                            function(){
+                                                $(this).css("opacity","0.5");
+                                            }
+                                        );
+                                    $(this).css("opacity","1");
+                                    
+                                }
+                            });
+                    $("output").append(html);
+                    //$(".div-input-img").remove();
+                  // Render thumbnail.
+                  /*
+                  var span = document.createElement('span');
+                  span.innerHTML = ['<img class="thumb img-fluid" src="', e.target.result,
+                                    '" title="', escape(theFile.name), '"/>'].join('');
+                  document.getElementById('list').insertBefore(span, null);*/
+                  $(".img-perfil").attr("src",e.target.result);
+                  $(".ft-prod").html("").append($("<img>",{"src":e.target.result, "class":"img-fluid"}));
+                  imgs.push(e.target.result);
+                  
+                };
+              })(f);
+        
+              // Read in the image file as a data URL.
+              reader.readAsDataURL(f);
+            }
+            console.log(imgs);
+          }
+        
+          //document.getElementById('foto_prod').addEventListener('change', handleFileSelect, false);
+          
+          $("#foto_prod").on({"change":function(evt){
+            $("#bloco-foto").removeClass("bg-light");
+            $("output").html("");
+            console.log(evt);
+            handleFileSelect(evt);
+
+          }});
+        $(".i-nome").click(function(){
+            $(this).parent(".form-group:odd()").addClass("bg-danger");
+        })
+    </script>
+</body>
+</html>

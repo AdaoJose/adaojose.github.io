@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Acompanhar Pedidos!!!</title>
+    <link rel="stylesheet" href="css/expo_prod.css">
+    <link rel="stylesheet" href="css/fontawesome-free-5.12.1-web/css/all.css">
+</head>
+<body>
+    <div class="modal fade" id="addCarrinho" tabindex="-1" role="dialog" aria-labelledby="exampleModalScrollableTitle" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered" role="document">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title text-primary lead" id="addCarrinhoTitulo">Levar ao meu carrinho</h5>
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+            <div class="modal-body addCarrinhoBody">
+              ...
+            </div>
+            <div class="modal-footer bg-dark">
+              <div class="addCarrinhoPreco col text-left text-light lead">R$ 0.00</div>
+              <button type="button" class="btn btn-outline-primary">Confirmar</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    <script src="js/jquery.js"></script>
+    <script src="js/expo_produto.js"></script>
+    <script src="js/functions_expo.js"></script>
+    <script src="css/bootstrap-4.3.1-dist/js/bootstrap.js"></script>
+    <script>
+        
+        let html = '<div class="row bg-light carregando col-12"><div class="spinner-grow text-primary text-center m-auto centralizar" role="status" style="height: 150px; width: 150px;"><span class="sr-only">Loading...</span></div></div>';
+                tela.name = "curtido";
+                tela.titulo = "Os que gostei";
+                tela.construir();
+                tela.voltar = true;
+                tela.append(html);
+                tela.show();
+                $(".fa-arrow-left").click((e)=>{history.back()});
+                var myHeaders = new Headers();
+                myHeaders.append("AppKey", APP_KEY);
+                myHeaders.append("AppId", APP_ID);
+                myHeaders.append("Content-Type", "application/json");
+                
+                var raw = JSON.stringify({ user:JSON.parse(localStorage.getItem("usuario"))});
+                
+                var requestOptions = {
+                  method: 'POST',
+                  headers: myHeaders,
+                  body: raw,
+                  redirect: 'follow'
+                };
+                let urlAlvo = URL_SERVER_BASE+"api/view/purchaseditems";
+                fetch("https://localhost/saory-api/api/produto/listarFavoritos", requestOptions)
+                .then(response => response.json())
+                .then(result => carregarCurtidos(result))
+                .catch(error => console.log('error', error));
+        
+        let dataOBJForSend = JSON.stringify({ user:JSON.parse(localStorage.getItem("usuario"))});
+        function carregarCurtidos(produtos){
+            tela.limparPainel();
+            console.log(produtos)
+
+            for(var [key, value] of Object.entries(produtos)){//correndo o Json retorno 
+                if(produtos.length>0){
+                    produto.todos[value.id] = value;
+                    /**construindo o html */
+                    let random = Math.floor(Math.random() * 65536);
+                    let html = $("<div/>",{"class":"cat-produto col-12  mr-auto ml-auto col-md-2 mb-4 pt-3 z-index-2",
+                                            "id":value.id,
+                                          }).
+                                    append(
+                                        $("<figure/>",{
+                                            "class":"cat-img-block text-center",
+                                            id:"img_block"+value.id+"_"+random,
+                                        })
+                                            .append(
+                                                    //pego apenas a primeira string do value.id
+                                                    $("<legend/>",{"class":"cat-legend text-light col-12 bg-primary"}).
+                                                            append("R$ "+Array.min(Object.values(value.size_value))),
+                                                        $("<div/>",{"class":"cat-social"}).append(
+                                                        $("<i/>",{
+                                                            "class":"fa fa-heart cat-curtir text-x-large z-index-6 text-primary m-auto",
+                                                            "data-id":value.id,
+                                                            "data-favoritado":value.favoritado,
+                                                            click:function(){
+                                                               // $(this).toggleClass("text-primary text-danger");
+                                                                var myHeaders = new Headers();
+                                                                myHeaders.append("AppKey", APP_KEY);
+                                                                myHeaders.append("AppId", APP_ID);
+                                                                myHeaders.append("Content-Type", "application/json");
+    
+                                                                var raw = JSON.stringify({"user":JSON.parse(localStorage.getItem("usuario"))});
+    
+                                                                var requestOptions = {
+                                                                method: 'POST',
+                                                                headers: myHeaders,
+                                                                body: raw,
+                                                                redirect: 'follow'
+                                                                };
+                                                                if($(this).attr("data-favoritado")==0){
+                                                                    fetch("https://localhost/saory-api/api/produto/favoritar/"+$(this).attr("data-id"), requestOptions)
+                                                                    .then(response => response.text())
+                                                                    .then(result => {$(this).attr("data-favoritado",1)})
+                                                                    .catch(error => console.log('error', error));
+                                                                }else{
+                                                                    fetch("https://localhost/saory-api/api/produto/desfavoritar/"+$(this).attr("data-id"), requestOptions)
+                                                                    .then(response => response.text())
+                                                                    .then(result => {$(this).attr("data-favoritado",0)})
+                                                                    .catch(error => console.log('error', error));
+                                                                }
+                                                                
+    
+                                                            }
+                                                        }),
+                                                        /**
+                                                         * ****************************
+                                                         *        COMPARTILHAR        *
+                                                         * ****************************
+                                                         */
+                                                        $("<i/>",{"class":"fa fa-share-alt cat-share text-primary text-large m-auto",
+                                                            click:function(){
+                                                                //$(".compartilhar").show();
+                                                                $(".catalogo").append(
+                                                                    $("<p/>",{"class":"block-compartilhar bg-primary h1 text-light text-center p-1"})
+                                                                    .append($("<i/>",{"class":"fab fa-whatsapp"})),
+                                                                    $("<p/>",{"class":"block-compartilhar-close bg-light", click:()=>$(".block-compartilhar, .block-compartilhar-close").remove()})
+                                                                );
+                                                                
+                                                            }
+                                                        }),
+                                                        $("<i/>",{
+                                                            "class":"fa fa-cart-plus text-primary text-x-large cat-carrinho m-auto",
+                                                            "data-nome":value.nome,
+                                                            "data-descricao":value.descricao,
+                                                            "data-categoria":value.categoria,
+                                                            "data-tamanho-valor":JSON.stringify(value.size_value),
+                                                            "data-id":value.id,
+                                                            "data-custo-envio":value.custo_envio,
+                                                            "data-estoque":value.estoque,
+                                                            "data-img":value.img[0],
+                                                            "data-nota":value.nota,
+                                                            "data-tot-avaliacao":value.tot_avaliacao,
+                                                            click:function(){carrinho.add(this);}
+                                                        })
+                                                    )  
+                                            ),//fim de figure
+                                        $("<div/>",{"class":"cat-prod-title text-primary text-truncate",
+                                            click:function(e){
+                                                produto.exibir($(this).parents(".cat-produto").attr("id"));
+                                                $(".navbar").fadeOut("slow");
+                                            }
+                                        }).
+                                                append(value.nome),
+                                        $("<div/>",{"class":"cat-prod-descricao  text-truncate"}).
+                                                append(value.descricao),
+                                        $("<div/>",{"class":"cat-add-to-cart col-12 p-2"}).
+                                            append(//btn auxiliar adicionar ao carrinho 
+                                                    $("<button>",{"class":"btn-add-to-cart btn btn-outline-primary col-12",
+                                                                    click:function(){
+                                                                        let id = $(this).parents(".cat-produto").attr("id");
+                                                                        $(".expo-block").attr("data-id",id);
+                                                                        $(".expo-box-tamanho").fadeIn("slow");
+                                                                        
+                                                                    }
+                                                                }
+                                                     ).
+                                                     append(
+                                                             $("<i/>",{"class":"fa fa-cart-plus"})
+                                                            )
+                                                ),
+                                        //btn expande esconde
+                                        $("<div/>",{"class":"btn-expand text-center col-12",
+                                            click:function(){
+                                                $(".btn-expand i").not($(this).children()).removeClass("fa-angle-up").addClass("fa-angle-down");
+                                                $(this).children().toggleClass("fa-angle-up fa-angle-down");
+                                                $(".cat-add-to-cart").
+                                                    not(
+                                                        $(this).siblings(".cat-add-to-cart")
+                                                    ).hide("slow");
+                                                $(".cat-prod-descricao").not($(this).siblings(".cat-prod-descricao")).addClass("text-truncate");//truca a descricao
+                                                $(".cat-prod-title").not($(this).siblings(".cat-prod-title")).addClass("text-truncate");//truca o nome
+                                                $(this).siblings(".cat-add-to-cart").toggle("slow");
+                                                $(this).siblings().toggleClass("text-truncate");
+                                                }
+                                        }).append(
+                                                $("<i>",{"class":"fa fa-angle-down"})
+                                        )
+                                    );
+    
+                    tela.append(html);
+                    loadImg(value.img[0],"#img_block"+value.id+"_"+random,"prepend");
+                    
+                }
+            }
+        }
+        
+    </script>
+    
+</body>
+</html>

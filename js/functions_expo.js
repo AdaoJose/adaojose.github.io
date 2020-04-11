@@ -12,7 +12,7 @@ function isObject(val) {
     return ( (typeof val === 'function') || (typeof val === 'object') );
 }
 function abrirCesta(){
-    alert("Ola mundo");
+    cesta.show();
 }
 function loadImg(img, alvo="body", preOrApend='prepend', atributo = false){
 

@@ -11,7 +11,9 @@ function isObject(val) {
     if (val === null) { return false;}
     return ( (typeof val === 'function') || (typeof val === 'object') );
 }
-
+function abrirCesta(){
+    alert("Ola mundo");
+}
 function loadImg(img, alvo="body", preOrApend='prepend', atributo = false){
 
         if(img==""){

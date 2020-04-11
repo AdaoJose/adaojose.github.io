@@ -7,7 +7,12 @@ tela.construir();
 tela.voltar = true;
 tela.append(html);
 tela.show();
-$(".fa-arrow-left").click((e)=>{history.back()});
+$(".fa-arrow-left").
+click((e)=>{
+  history.back()
+});
+$(".expo-lista-compra").
+hide();
 var myHeaders = new Headers();
 myHeaders.append("AppKey", APP_KEY);
 myHeaders.append("AppId", APP_ID);

@@ -113,7 +113,9 @@ var carrinho = {
                         html(option);
     
                         $(".addCarrinhoPreco").
-                        text($(this).text());
+                        text($(this).
+                            children("option:selected").
+                            text());
                      }
                  })
                  .append(()=>{

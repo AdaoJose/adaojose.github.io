@@ -7,12 +7,6 @@ tela.construir();
 tela.voltar = true;
 tela.append(html);
 tela.show();
-$(".btn-show-shoppingcart").click(function(){
-  cesta.show();
-});
-$(".expo-ico-carrinho-hide").click(function(){
-  cesta.hide();
-});
 $(".fa-arrow-left").click((e)=>{history.back()});
 var myHeaders = new Headers();
 myHeaders.append("AppKey", APP_KEY);

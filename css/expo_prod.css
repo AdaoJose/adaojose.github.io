@@ -63,6 +63,7 @@
 .navbar-principal{
     top:0px;
     display:flex;
+    margin-left: -15px;
 }
 .carregando{
     height: 100vh;
@@ -91,6 +92,14 @@
 .tela-js{
     top:0px;
     overflow-y: auto;
+}
+/** 
+*JANELAS_JS
+*/
+.janelas{
+    top:0px;
+    overflow-y: auto;
+    overflow-x: hidden;
 }
 /*
 Pagamento

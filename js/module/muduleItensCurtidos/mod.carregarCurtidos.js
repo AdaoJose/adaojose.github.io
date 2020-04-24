@@ -1,6 +1,8 @@
 import compartilharProduto from '../moduleProduto/mod.compartilhar.js';
 import carrinho from '../moduleCarrinho/mod.carrinho.js';
 import curtirProduto from '../moduleProduto/mod.curtir.js';
+
+
 $(".addCarrinhoConfirmar").click(function(){carrinho.confirmar(this)});
 /**
  * Por padrão quando os produtos veem do web-service chegam sem seguir uma ordem especifica

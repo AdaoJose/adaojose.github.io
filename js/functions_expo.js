@@ -1057,6 +1057,7 @@ var tela = {
     medidaHeight       : 'vh', //vh, px, % etc.
     medidaWidth        : 'vw',
     bg                 : '#f8f9fa',
+    bgHead             : '',
     construir          : ()=>{
                             
                             if(!$('.tela-js').length){
@@ -1092,6 +1093,17 @@ var tela = {
         tela.construir();
         $('.tela-js').show('slow'); 
 
+    },
+    /** 
+     * Para Realizar edição no cabeçalho da tela;
+     * ao chamar o metodo o cabeçalho padrão é retirado.
+     * @param paramHTML: recebe todo squema html que será colocado no lugar do cabecalho.
+     * caso vazio o cabecalho ficará vazio tambem.
+     * @returns tela
+    */
+    editeHead       :(paramHTML='')=>{
+        $(".tela-js-cabeca").html("").html(paramHTML);
+        return tela;
     }
 };
 

@@ -1,3 +1,14 @@
+/**
+ * Esta função tem por objetivo criar a navegação baseada em janelas
+ * com ela voce pode padronisar as janelas de sua aplicação vitando reescrita de codigos
+ * Ex. let home = janelas(); let about = janelas(); let menuLateral = janelas();
+ * assim voce terá uma janela para cada parte de sua aplicção que serão personalizaveis;
+ * Ex. Ola mundo com janelas();
+ * let home = janelas();
+ * home.append("Ola mundo");
+ * mais exemplos são encontrados na documentação
+ */
+
 export default function janelas(){
     let idJanela = 'JA'+parseInt(Math.random()*2000);
     let self = {

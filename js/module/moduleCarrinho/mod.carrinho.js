@@ -11,6 +11,13 @@ var carrinho = {
      * @param _HTMLprodTag pode ser $(this) ou this ou até $('.btn_add_to_cart')
     */
     add:_HTMLprodTag=>{
+        // caso aindo não tenha estrutura adiciono a padrão
+        if(!$("#addCarrinho").length){
+            $.get("./template/carrinhoAdd.tpl", function(data){
+                $("body").append(data);
+            });
+        }
+
         var paramHtml = $(_HTMLprodTag);
         var botaoConfirmar = $(".addCarrinhoConfirmar");//botão clicado ao finalizar a compra
 

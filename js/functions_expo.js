@@ -14,6 +14,13 @@ function isObject(val) {
 function abrirCesta(){
     cesta.show();
 }
+function fecharCesta(){
+    cesta.hide();
+}
+function confirmarEAdicionarACesta(confirmar){
+    // carrinho.confirmar(confirmar)
+    console.log(confirmar);
+}
 function loadImg(img, alvo="body", preOrApend='prepend', atributo = false){
 
         if(img==""){
@@ -342,6 +349,11 @@ var cesta = {
         return(this);
     },
     show:function(){
+        if(!$(".expo-lista-compra").length){
+            $.get("template/cesta.tpl", function(data){
+                $("body").append(data);
+            });
+        }
         cesta.sinc();
         $(".expo-lista-compra").show("slow");
         return(this);

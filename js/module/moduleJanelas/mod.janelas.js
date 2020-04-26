@@ -62,7 +62,7 @@ export default function janelas(){
         limparPainel    : ()=>{
                                 $('#'+self.id+' > .painel').html("");
                             },
-        CabecalhoHide   :()=>{
+        barraDeFerramentasHide   :()=>{
                             $(".janelas#"+self.id+" > .cabecalho-janelas").hide()
         },
         hide          : function(){

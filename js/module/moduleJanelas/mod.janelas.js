@@ -62,6 +62,9 @@ export default function janelas(){
         limparPainel    : ()=>{
                                 $('#'+self.id+' > .painel').html("");
                             },
+        CabecalhoHide   :()=>{
+                            $(".janelas#"+self.id+" > .cabecalho-janelas").hide()
+        },
         hide          : function(){
                             $('#'+self.id).hide('slow');
         },
@@ -99,5 +102,10 @@ export default function janelas(){
             });
         }
     }
+    //garante que ao inicializar as tags html ja seja adicionadas ao corpo do documanto.
+    self.construir();
+    // garante que a tela inicialise minimizada
+    self.hide();
+    // retorna o obejeto
     return (self);
 }

@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <script src="../js/jquery.js"></script>
+
+    <link rel="stylesheet" href="css/css.css">
+    <link rel="stylesheet" href="../css/fontawesome/fontawesome.css">
+    
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+</head>
+<body>
+    <div class="container-fluid text-center h5 p-4 bg-primary text-lighta">
+        Saory
+    </div>
+        <header class="bg-light">
+            <div class="h4 p-5 text-muted">Bem vindo ao cadastro de produtos<small class="row pr-3 pl-3 mt-4">Cadastre seus melhores produtos e mostreos ao mundo</small></div>
+        </header>
+    <div class="container mt-5">
+        <form>
+            <div class=" text-center bg-light text-muted" id="bloco-foto">
+                <div class="ft-prod">
+                        <i class="fa fa-camera ico-camera"></i>
+                </div>
+                
+                <div class="div-input-img">
+                        <input type="file" class="input-img" name="foto_produto[]" id="foto_prod" multiple>
+                </div>
+                
+                <output id="list">Nenhuma imagem selecionada</output>
+            </div>
+            <div class="form-group">
+                <input type="text" name="nome_produto" id="nome_prod" class="form-control" placeholder="Nome do produto">
+            </div>
+            <div class="form-group">
+                <textarea name="descricao_prod" id="desc_prod" class="form-control" placeholder="Descrição para o produto" cols="30" rows="5"></textarea>
+            </div>
+            <div class="form-group">
+                <input type="number" name="valor_produto" id="val_prod" placeholder="Valor do produto. Ex. 25.30" class="form-control">
+            </div>
+        </form>
+        <button class="btn btn-primary col-12 p-3 mb-5 btn-cadastro">Cadastrar</button>
+
+    </div>
+    <script>
+        
+        var imgs = []; //recebe as imagens em formato de dataUrl base64
+        function handleFileSelect(evt) {
+            var files = evt.target.files; // FileList object
+            
+            // Loop through the FileList and render image files as thumbnails.
+            for (var i = 0, f; f = files[i]; i++) {
+        
+              // Only process image files.
+              if (!f.type.match('image.*')) {
+                continue;
+              }
+        
+              var reader = new FileReader();
+        
+              // Closure to capture the file information.
+              reader.onload = (function(theFile) {
+                return function(e) {
+                    let html = 
+                            $("<img/>",{
+                                class:"img-fluid img-aux-perfil",
+                                src:e.target.result,
+                                click:function(){
+                                    
+                                    $(".ft-prod img").attr("src",$(this).attr("src"));
+                                    $(".img-aux-perfil")
+                                        .not(this)
+                                        .each(
+                                            function(){
+                                                $(this).css("opacity","0.5");
+                                            }
+                                        );
+                                    $(this).css("opacity","1");
+                                    
+                                }
+                            });
+                    $("output").append(html);
+                    $(".div-input-img").remove();
+                  // Render thumbnail.
+                  /*
+                  var span = document.createElement('span');
+                  span.innerHTML = ['<img class="thumb img-fluid" src="', e.target.result,
+                                    '" title="', escape(theFile.name), '"/>'].join('');
+                  document.getElementById('list').insertBefore(span, null);*/
+                  $(".img-perfil").attr("src",e.target.result);
+                  $(".ft-prod").html("").append($("<img>",{"src":e.target.result, "class":"img-fluid"}));
+                  imgs.push(e.target.result);
+                  
+                };
+              })(f);
+        
+              // Read in the image file as a data URL.
+              reader.readAsDataURL(f);
+            }
+            console.log(imgs);
+          }
+        
+          //document.getElementById('foto_prod').addEventListener('change', handleFileSelect, false);
+          
+          $("#foto_prod").on({"change":function(evt){
+            $("#bloco-foto").removeClass("bg-light");
+            $("output").html("");
+            handleFileSelect(evt);
+          }});
+                
+    </script>
+</body>
+</html>

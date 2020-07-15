@@ -1,3 +1,19 @@
+
+/**
+ * Retorna um objeto html de carregamento padrão que é o spiner que vem do bootstrap 
+ * @dependece bootstrap
+ * @returns Html_Object loader
+ */
+function loaderHtml(){
+    return $("<div/>",{
+        "class":"loaderHtml spinner-border text-primary",
+        "role":"status"
+    })
+    .append($("<span/>",{
+            "class":"sr-only"
+        })
+        .append("Loading..."))
+}
 // Funcao para retornar o menor valor de um array
 Array.min = function(array) {
     return Math.min.apply(Math, array);
@@ -12,17 +28,19 @@ function isObject(val) {
     return ( (typeof val === 'function') || (typeof val === 'object') );
 }
 function abrirCesta(){
+    console.log("[abrirCesta] inicializando...");
     cesta.show();
+    console.log("[abrirCesta] finalizado...")
 }
-function fecharCesta(){
-    cesta.hide();
-}
+
 function confirmarEAdicionarACesta(confirmar){
     // carrinho.confirmar(confirmar)
     console.log(confirmar);
 }
 function loadImg(img, alvo="body", preOrApend='prepend', atributo = false){
-
+        
+        str = img.substring(0,10);
+        
         if(img==""){
             if(isObject(atributo) && atributo!=false){
                 atributo.src = 'img/iconeimg.png';
@@ -38,7 +56,23 @@ function loadImg(img, alvo="body", preOrApend='prepend', atributo = false){
             $(alvo).append(
                 $("<img/>",atributo)
             );
-        }else{
+        }
+        else if(str == "data:image"){
+            //a imagem ja é blob
+            console.log("é image");
+            
+            atributo = {
+                "src":img, "class":"cat-img img-fluid bg-light z-index-5",
+                "click":function(){
+                    slide.show($(this).parents(".cat-produto").attr("id"));
+                },
+            };
+
+            $(alvo).append($("<img/>",atributo));
+            console.log($(alvo));
+
+        }
+        else{
             fetch(img)
             .then(function(response) {
                 return response.blob();
@@ -60,6 +94,8 @@ function loadImg(img, alvo="body", preOrApend='prepend', atributo = false){
                     }
                 }
                 $(alvo).append($("<img/>",atributo));
+                console.log($(alvo));
+                
                 
             })
             .catch(()=>{
@@ -247,472 +283,50 @@ function inicio(){
     $(".catalogo").fadeIn("slow");
    
 }
-function vaParaTela(classOuId,naoEsconda=""){
-    $("body > *").not(classOuId+" "+naoEsconda+", #rodape").hide();
-    $(classOuId).show("slow");
-}
-function alertar(e = ""){
-    let timer = e.split(' ').length;//tempo para o fim da animação
-    timer=(timer*605);
-    timer=(timer<2000)?2000:timer;
+
+function alertar(msg = ""){
+    console.
+    log("[alertar] start ...");
+
+    let timer = 
+        msg.toString().
+        split(' ').
+        length
+    ;//tempo para o fim da animação
+
+    timer=(timer*605);//tempo aproximado que levamos para ler uma palavra
+    timer=
+        (timer<2000)?2000:timer
+    ;
+   
+    let id = "alert"+(parseInt(Math.random()*100).toString());
     $("body").
-        append(
-                $("<div/>",{"class":"position-fixed alert alert-primary col-12 z-index-max alertar text-center","style":"top:0px"}).
-                            append(e)
-        );
+    append(
+            $("<div/>",{"id":id,"class":"position-fixed alert alert-primary col-12 z-index-max alertar text-center","style":"top:0px"}).
+                        append(msg)
+    );
+
     setTimeout(function(){
-        $(".alertar").animate({"opacity":0},500,"linear",function(){
-            $(this).remove();
-        });
-    },timer)
+        $(".alertar").
+        animate(
+            {"opacity":0},
+            500,
+            "linear",
+            function(){
+                $("#"+id).remove();
+            }
+        );
+    },
+    timer)
+    ;
+    
+    console.log("[alertar] finish ...");
 }
 
-/*
-*<b>TotalCompra:</b>
-*Responssavel por calcular e apresentar o valor total da compra
-*/
-var totAPagar =[];//guarda o total a pagar
-function TotalCompra(id, valor){
-    let soma = 0;
-    totAPagar[id] = valor;
-    for(val in totAPagar){
-        soma = (soma + totAPagar[val]);
-    }
-    var formato = { minimumFractionDigits: 2 , style: 'currency', currency: 'BRL' };
 
-    $(".expo-total-compra").text(soma.toLocaleString('pt-BR', formato));//total a pagar
-};
 
-/**
- * ********************************
- *        CARRINHO DE COMPRAS     *
- * ********************************
- */
 
-var cesta = {
-    add:function(id,quantidade,tamanho){
-        var dataOBJForSend = {"products":{"id":id,"quantity":quantidade,"size":tamanho},user:JSON.parse(localStorage.getItem("usuario"))};
-        $.post({"url":"https://localhost/saory-api/api/cart/add",
-                "headers":headersApp,
-                "data":JSON.stringify(dataOBJForSend)
-        }).done(
-            (d)=>{
-                console.log(d);
-                if(d.status=='error'){//if return erro on server
-                    alertar("Erro ao adicionar a lista de compras. Estamos trabalhando para resolver!");
-                }else{
-                    alertar("Adicionado a lista de compras!");
-                }
-                
-            }).fail(
-                (d,statusText, xhr)=>{
-                    console.log(d);
-                    alertar("falha ao adicionar a lista de compras verifique sua conexão!");
-                });
-        return(this);
-    },
-    remove:function(id){
-        TotalCompra(id,0);
-        let myHeaders = new Headers();
-        myHeaders.append("AppKey", APP_KEY);
-        myHeaders.append("AppId", APP_ID);
-        myHeaders.append("Content-Type", "application/json");
 
-        let raw = JSON.stringify({"products":{"id":id},"user":JSON.parse(localStorage.getItem("usuario"))});
-
-        let requestOptions = {
-        method: 'POST',
-        headers: myHeaders,
-        body: raw,
-        redirect: 'follow'
-        };
-
-        fetch("https://localhost/saory-api/api/cart/remove", requestOptions)
-        .then(response => response.json())
-        .then(result =>{
-            alertar("Este item foi removido");
-                    $("#"+id).removeClass("destaque");//remove destaque do produto removido
-                    cesta_de_compra.splice(id,1);
-                    $("#item-"+id).remove();
-        })
-        .catch(error => {
-            if(!navigator.onLine){
-                alertar("Falha! Você não tem uma conexão.");
-            }else{
-                alertar("Falha! verifique a sua conexão.");
-            }
-        });
-        
-    },
-    hide:function(){
-        $(".expo-lista-compra").hide("slow");
-        return(this);
-    },
-    show:function(){
-        if(!$(".expo-lista-compra").length){
-            $.get("template/cesta.tpl", function(data){
-                $("body").append(data);
-            });
-        }
-        cesta.sinc();
-        $(".expo-lista-compra").show("slow");
-        return(this);
-    },
-    reset:function(){
-        $(".expo-body-lista-compra").html("");
-        cesta_de_compra = [];
-    },
-    sinc:function(){// apenas adiciona produtos vindos do servidor para sincronia com o servidor sem enviar para o servidor
-        //console.log(produto.todos[id]);
-            let loading =$("<div/>", {class:"spinner-grow text-primary text-center m-auto ", role:'status', style:"width:65px;hight:65px;"})
-                .append($("<span/>",{class:"sr-only"}).append("Carregando..."))
-            ;
-            loading = $("<div/>",{class:"text-center mt-5 loading-cesta",style:"width:300%"}).append(loading);
-            let btnReload = $('<div/>', {"class":" text-center btn-reload-cesta mt-5", style:"width:200%"})
-                        .append($("<button/>", {
-                            "class":"btn btn-primary m-auto",
-                            click:()=>{
-                                cesta.sinc();
-                            }
-                        }).append("Tentar outra vez"))
-            ;
-            cesta.reset();//retira todos produtos da lista
-            $(".btn-reload-cesta").remove();
-            $(".expo-body-lista-compra").append(loading);
-            let dataOBJForSend = JSON.stringify({user:JSON.parse(localStorage.getItem("usuario"))});
-            $.post({
-                url:URL_SERVER_BASE+"api/cart/showList",
-                "headers":headersApp,
-                data:dataOBJForSend
-            }).done((data)=>{
-                console.log(data);  
-                if(data.status=="error"){
-                    alertar("Erro ao exibir lista de compra. Estamos trabalhando para solucionar");
-                    return(this);
-                }
-                //let json = JSON.parse(data);
-                if(data.length<1){//cesta vazia 
-                    console.log("Cesta vazia");
-                    let cestaVazia = $("<div/>",{class:"lead mt-5 text-center", style:"width:160%"})
-                        .append("Sua cesta de compra ainda esta vazia :(")
-                    ;
-                    $(".expo-body-lista-compra").append(cestaVazia);
-                }
-                $.each(data, function(key, val){
-                   // cesta.sinc(val.productId,val.quantity,val.quantity, val.value);
-                    let id = val.productId;
-                    let quantidade = val.quantity;
-                    let tamanho = val.size;
-                    let valor = val.value;
-                    TotalCompra(id,(valor*quantidade));
-                    $("#"+id).addClass("destaque");//marca produto adicionado
-                    let html = $("<tr/>",{"id":"item-"+id}).append(
-                        $("<td/>",{"class":"expo-lista-compra-img-item"}).
-                            append($("<img/>",{"src":((produto.todos[id].img[0]!="")?produto.todos[id].img[0]:'8'),"class":"img-fluid expo-img-aux"})),
-                        $("<td/>").
-                            append(produto.todos[id].nome),
-                        $("<td/>",{"class":"preco-qtd"}).
-                            append($("<i>",{"class":"item-preco"}).append(valor)," <br>X ").append($("<i/>",{"class":"item-qtd"}).append(quantidade)),
-                        $("<td/>").
-                            append($("<button/>",{"class":"btn btn-outline-primary",
-                            "id":id,
-                            click:function(){
-                                cesta.remove($(this).attr("id"));
-                            }
-                        }).
-                            append("X"))
-                    );
-                $(".expo-body-lista-compra").append(html);
-               
-                
-                cesta_de_compra[id] = {"id":id,"quantidade":quantidade,"tamanho":tamanho};
-
-                })
-                $(".loading-cesta").remove();//remove carregamento depois de adicionar produtos
-
-            }).fail((data)=>{
-                console.error(data);
-                if(!navigator.onLine){
-                    alertar("Conecte a uma rede e tente novamente");
-                }else{
-                    alertar("Verifique sua conexão com a internet!");
-                }
-                $(".expo-body-lista-compra").append(btnReload);
-                $(".loading-cesta").remove();//remove carregamento depois de adicionar produtos
-            });
-            
-        
-        return(this);
-    },
-    lastSinc:false,
-    pre_add:(id)=>{
-        //let id = $(this).parents(".cat-produto").attr("id");
-        $(".expo-block").attr("data-id",id);
-        $(".expo-box-tamanho").fadeIn("slow");
-        $(".expo-box-tamanho .expo-tamanho-item").html(" ");
-        $(".preco").text(Array.min(Object.values(produto.todos[id].size_value)));
-        //console.log(value.size_value);
-        for (var [key, val] of Object.entries(produto.todos[id].size_value)) {
-            let opt_attr = {"data-valor":val};
-            if(val==Array.min(Object.values(produto.todos[id].size_value))){opt_attr.selected=true}
-            $(".expo-box-tamanho .expo-tamanho-item").append($("<option/>",opt_attr).append(key));
-        }
-        $(".expo-box-tamanho .expo-tamanho-item").change(function(){
-            $(".expo-box-tamanho .expo-tamanho-item option").each(function(i,v){
-            if($(this).val()==$(".expo-box-tamanho .expo-tamanho-item").val()){
-                console.log(i);
-                $(".preco").text($(this).attr('data-valor'));
-            }
-        })});
-        
-        +((produto.todos[id].tamanho)?produto.todos[id].tamanho.splice(","):'8')
-    }
-};
-var pagamento = {
-    efetuar : ()=>{
-        cartaoDeCredito.nome = $("#pg-nome").val().trim();
-            cartaoDeCredito.bandeira = $("#pg-bandeira").val();
-            cartaoDeCredito.numero = $("#pg-numero").val();
-            cartaoDeCredito.vencimento = $("#pg-vencimento-mes").val()+"/"+$("#pg-vencimento-ano").val();
-            cartaoDeCredito.verificador = $("#pg-verificador").val();
-            pagamento.tipo = "credito";
-            pagamento.dados = cartaoDeCredito;
-            //validação
-            if(
-                cartaoDeCredito.nome !="" && cartaoDeCredito.nome!=null && cartaoDeCredito.nome != undefined &&
-                cartaoDeCredito.bandeira !="" && cartaoDeCredito.bandeira!=null && cartaoDeCredito.bandeira != undefined &&
-                cartaoDeCredito.numero !="" && cartaoDeCredito.numero!=null && cartaoDeCredito.numero != undefined &&
-                cartaoDeCredito.vencimento !="" && cartaoDeCredito.vencimento!=null && cartaoDeCredito.vencimento != undefined &&
-                cartaoDeCredito.verificador !="" && cartaoDeCredito.verificador!=null && cartaoDeCredito.verificador != undefined
-            ){
-                app.chave = "pagamento";
-                app.tipo = "credito";
-                app.produtos = cesta_de_compra.filter(function(e){return e!=undefined});
-                app.bau = cartaoDeCredito;
-                //ws.send(JSON.stringify(app));
-                
-                //carregando.show();
-                tela.limparPainel();
-                let html = '<div class="row bg-light carregando col-12"><div class="spinner-grow text-primary text-center m-auto centralizar" role="status" style="height: 150px; width: 150px;"><span class="sr-only">Loading...</span></div></div>';
-                tela.name = "procecando-pagamento";
-                tela.titulo = "Finalizando compra";
-                tela.construir();
-                tela.voltar = false;
-                tela.append(html);
-                tela.show();
-                let cartao = {
-                        holder:$("#pg-nome").val().trim().replace(/\s{1,}/g, ''),
-                        brand:$("#pg-bandeira").val().trim().replace(/\s{1,}/g, ''),
-                        cvv:$("#pg-verificador").val().trim().replace(/\s{1,}/g, ''),
-                        number:$("#pg-numero").val().trim().replace(/\s{1,}/g, ''),
-                        expiration:($("#pg-vencimento-mes").val()+"/"+$("#pg-vencimento-ano").val()).trim().replace(/\s{1,}/g, '')
-                    };
-                let endereco = JSON.parse(localStorage.getItem("endereco"));  
-                let dataOBJForSend = {
-                    "card":cartao,
-                    "products":cesta_de_compra.filter(function(ele){
-                        return ele !== undefined;
-                      }),
-                    "user":JSON.parse(localStorage.getItem("usuario")),
-                    "address":endereco
-                };
-                console.log(dataOBJForSend);
-                $.post(
-                    {"url":"https://localhost/saory-api/api/pagamento/elo/CREDITO/1234",
-                    "Content-Type":"application/json",
-                    "headers":headersApp,
-                    "data":JSON.stringify(dataOBJForSend)
-                }).done(function(data){
-                    console.log(data);
-                    pagamento.finalizar(data);
-                }).fail(function(data){
-                    if(tela.name=="procecando-pagamento"){
-                        tela.hide();
-                    }
-                    if(data.status==200){
-                        alertar("Desculpe! Ouve um imprevisto ao finalizar o pagamento. Tente novamente por favor...");
-                    }else{
-                        alertar("Falha ao enviar seu pedido de pagamento... Favor verifique sua conexão e tente novamente");
-                    }
-                    console.log("Falha ao enviar pagamento");
-                    console.log("url = https://localhost/saory-api/api/pagamento/"+cartaoDeCredito.bandeira+"/CREDITO/1234");
-                    console.log(data);
-                });
-            }else{
-                alertar("Todos os campos são requiridos");
-                //console.log(cartaoDeCredito);
-            }
-            //console.log(pagamento);
-    },
-    finalizar : (data)=>{
-        switch(data.code){
-            case 304 : 
-                alertar("Parabens... Sua compra foi finalizada!");
-                $(".tela-finalizar-pagamento").hide()
-                tela.titulo = "Compra Finalizada!";
-                tela.voltar = false;
-                tela.limparPainel();
-                //tela.bg = "#474e5d";
-                tela.construir();
-                tela.append($("<h3/>",{class:'text-success text-x-large'}).append('<div class="h-100 w-100 text-center"><i class="fas fa-check"></i> Pagamento aprovado!</div>'));
-                tela.append(
-                    '<div class="container-fluid"><div><div><p><small>data: '+data.date+'</small></p><p class="text-muted"><span class="text-primary text-larger">Status do pedido</span>:<span class="text-light bg-success p-1"> Esperando sair da loja</span><p class="text-larger text-dark p-2" style="background-color:white">Aguarde te avisaremos sobre atualizações em seu pedido!</p> <br><br>TID: <input type="text" class="form-control" value="'+data.transactionIdentifier+'"></p></div></div> <div class="col-12 text-center"> <buttom class="btn btn-success" onclick="window.location.assign('+"'"+PROJECT_URL_BASE+"acompanharpedidos.html'"+')">Ver Pedido(s)</buttom></div> <div class="col-12 text-center mt-2"> <buttom class="btn btn-link" onclick="window.location.reload()">Ir para o inicio</buttom> </div> </div>'
-                );
-                tela.show();
-                cesta.hide();
-                cesta.reset();
-                let soma = 0;
-                $(".expo-total-compra").text(0);
-                
-            break;
-            case 0 : 
-                alertar("Desculpe seu pagamento não foi altorizado");
-                if(tela.name=="procecando-pagamento"){
-                    tela.hide();
-                }
-            break;
-            case -1:
-                alertar("Transação não realizada: Cartão Expirado");
-                if(tela.name=="procecando-pagamento"){
-                    tela.hide();
-                }
-            break;
-            case -2:
-                alertar("Transação não realizada: Cartão Bloqueado");
-                if(tela.name=="procecando-pagamento"){
-                    tela.hide();
-                }
-            break;
-            case -3:
-                alertar("Transação não realizada: Operação demorou muito"); 
-                if(tela.name=="procecando-pagamento"){
-                    tela.hide();
-                }
-            break;
-            case -4:
-                alertar("Transação não realizada: Cartão Cancelado"); 
-                if(tela.name=="procecando-pagamento"){
-                    tela.hide();
-                }
-            break;
-            case -5:
-                alertar("Transação não realizada: Problemas com o Cartão de Crédito"); 
-                if(tela.name=="procecando-pagamento"){
-                    tela.hide();
-                }
-            break; 
-
-        }
-        tela.hide;
-    }
-};
-
-var app = {
-    numeroCatalogo:0,
-    userId:null,
-    userName:null,
-    userEmail:null,
-    userPass:null,
-    appId:null,
-    chave:null,
-    "bau": null//leva objetos opcionais como no caso de pagamento que precisa levar o objeto cartão de credito
-};
-if(localStorage.getItem("perfil")!=undefined &&localStorage.getItem("perfil")!=null && localStorage.getItem("perfil")!=""){
-    app = JSON.parse(localStorage.getItem("perfil"));
-}
-
-var usuario = {
-    dados: {
-        'nome':'',
-        'email':'',
-        'accessToken':'',
-        'accessTokenValidity':''
-    },
-    login:function(email=null, senha=null){
-        $.post( {'url':"https://localhost/saory-api/api/usuario/login", data:{ 'email':email, 'password':senha },headers:headersApp})
-                    .done(function( data ) {
-                        console.log(data);
-                        if(data.status=='error'){
-                            switch(data.code){
-                                case 214:
-                                    alertar("Verifique o email que te mandamos.");
-                                break;
-                                case 215:
-                                    alertar("Senha incorreta");
-                                break;
-                                case 216:
-                                    alertar("email invalido");
-                                break;
-                                case 217:
-                                    alertar("Usuario não registrado. Faça seu cadastro...");
-                                break;
-                                default:
-                                    alertar("Houve um erro inesperado!");
-                                break;
-                            }
-                            
-                        }else{
-                            //alert("logou");
-                            usuario.dados.nome = data.data.name;
-                            usuario.dados.email = data.data.userEmail;
-                            usuario.dados.accessToken = data.data.accessToken;
-                            usuario.dados.accessTokenValidity = data.data.accessTokenValidity;
-                            usuario.salvar(usuario.dados);
-                            abrirUrl("expo_produto.html");
-                        }
-                    }).fail(function(){
-                        if(!navigator.onLine){
-                            alertar("conecte a uma rede de dados ou wifi")
-                        }else{
-                            alertar("Parece que tivemos problema com a conexão de internet");
-                        }
-                        
-                    });
-    },
-    cadastro:function(){
-        //ws.send(JSON.stringify(app));
-        let nome  = $(".form-cadastro #nome").val();
-        let email = $(".form-cadastro #email").val();
-        let senha = $(".form-cadastro #senha").val();
-        $.post({url:"https://localhost/saory-api/api/usuario/cadastrousuario", data:{ name: nome, 'email':email, 'password':senha }, headers:{appId:APP_ID, Appkey:APP_KEY}})
-            .done(function( data ) {
-                console.log(data);
-                if(data.status=='error'){
-                    switch(data.code){
-                        case 210:
-                            alertar("Email invalido");
-                        break;
-                        case 211:
-                            alertar("Entrada de senha invalida");
-                        break;
-                        case 212:
-                            alertar("Nome contem caracteres invalidos");
-                        break;
-                        case 213:
-                            alertar("Usuario já registrado. Tente fazer login ou recupere a senha");
-                        break;
-                        default:
-                            alertar("Houve um erro ao realizar cadastro");
-                        break;
-                    }
-                    
-                }else{
-                    usuario.dados.nome = data.data.name;
-                    usuario.dados.email = data.data.email;
-                    usuario.dados.accessToken = data.data.accessToken;
-                    console.log();
-                    usuario.salvar(usuario.dados);
-                    abrirUrl("expo_produto.html");
-                }
-            });
-    },
-    "salvar":function(usuario){
-        localStorage.setItem("usuario",JSON.stringify(usuario));
-    },
-    sair:function(){
-        localStorage.setItem("perfil","");
-    }
-};
 var menu = {
     show:function(){
         pesquisa.hide();
@@ -730,37 +344,6 @@ var menu = {
      *  */
     
    
-    var slide = {
-        "show":function(id){
-            $(".expo-slide-img-aside, .expo-slide-img-close").fadeIn();
-            let imgs_slide =[]; 
-            console.log("produto.todos");
-            console.log(produto.todos[id]);
-            imgs_slide = (produto.todos[id].img)?(produto.todos[id].img).splice(","):'8';
-            console.log(produto.todos[id].img);
-            $(".expo-slide-img-aside").html("");
-            $(".expo-img-pricipal").attr('src', imgs_slide[0]);
-            console.log(imgs_slide[0]);
-            for(let i =0 ;i < imgs_slide.length;i++){
-                $(".expo-slide-img-aside").append(
-                    $("<img/>",{
-                        "src":imgs_slide[i],
-                        "class":"img-fluid expo-img-aux",
-                        click:function(){
-                            $(".expo-img-pricipal").
-                                attr("src",$(this).
-                                attr("src")
-                            );
-                        }
-                    })
-                )
-            }
-            $(".expo-slide-img").show("slow");
-        },
-        hide:function(){
-            $(".expo-slide-img").hide("slow");
-        }
-    };
 
     var cesta_de_compra = [];
 /**
@@ -966,156 +549,6 @@ var produto = {
         alertar(texto+" - Codigo:"+cod);
     }
 };
-var cartaoDeCredito = {
-    "nome":null,
-    "bandeira":null,
-    "numero":null,
-    "vencimento":null,
-    "verificador":null,
-    "tipo":"credito"
-};
-
-var notificacao = {
-    numRequisicao : 0,
-    get: function(){
-        app.chave = "getNotificacao";
-        ws.send(JSON.stringify(app));
-        notificacao.numRequisicao++;
-
-    },
-    retorno:(e)=>{
-        let naoLida = 0;
-        $.each(e, (index, value)=>{
-            if(value.estado==0) naoLida++;
-            let hora = value.data.splice(' ')[1];
-            let dia = value.data.splice(' ')[0].splice('-')[2];
-            let mes = value.data.splice(' ')[0].splice('-')[1];
-            let ano = value.data.splice(' ')[0].splice('-')[0];
-            let data = dia+'/'+mes+' '+hora;
-            $(".notificacao-body").append(
-                $("<tr/>").append(
-                    '<td class="expo-lista-compra-img-item"><img src="https://localhost/loja_fer/app/controler/img_fornec.php?img=7" class="img-fluid expo-img-aux"></td><td class="text-primary">'+value.titulo+'<br><div class="col-12 small">'+value.menssagem+'<br></div><div class="text-xx-small col-12 text-right">'+data+'</div></td>'
-                )
-            );
-        });
-        if(naoLida!=0) $(".notificacao-numero").text(naoLida);
-    },
-    show:function(){
-        pesquisa.hide()
-        menu.hide();
-        //$(".tela-notificacao").toggle();
-        if($(".tela-notificacao").css('display')=='none' || $(".tela-notificacao").css('display')== 'NONE'){
-            $(".tela-notificacao").fadeIn();
-        }else{
-            notificacao.hide()
-        }
-    },
-    hide:()=>{
-        $(".tela-notificacao").fadeOut();
-        $(".notificacao-numero").text("");
-    }
-};
-var pesquisa = {
-    show:()=>{
-        notificacao.hide();
-        menu.hide();
-        $(".tela-pesquisa").fadeIn();
-    },
-    hide:()=>{
-        $(".tela-pesquisa").fadeOut();
-    },
-    "pesquisar":(txt)=>{
-        txt = txt.trim().replace(/\s{2,}/g, ' ');
-        if(txt == ""){
-            $(".pesquisa-res").html("");
-            return false;
-        }
-        var urlAlvo = URL_SERVER_BASE+"api/search/"+txt;
-        $.get({
-            url:urlAlvo,
-            headers:headersApp
-        }).done((result)=>{
-            $(".pesquisa-res").html("");
-            console.log(result);
-            $.each(result,function(index, value){
-                produto.todos[value.id] = value;
-                let img = value.img;
-                img = (img!='')?img.split(",")[0]:"8";
-                console.log( (img.indexOf(",")) );
-                let html = $("<tr/>",{"id":value.id,click:function(){produto.exibir($(this).attr("id"));$(".navbar").fadeOut("slow");}})
-                    .append(
-                        '<td class="expo-lista-compra-img-item"><img src="'+img+'" class="img-fluid expo-img-aux"></td><td class="text-primary">'+value.nome+'<br><small>'+value.descricao+'<br>R$'+value.preco_atual+'</small></td>'
-                    );
-                $(".pesquisa-res").append(html);
-            });
-        }).fail((result)=>{
-            if(result.status!=200)
-                alertar("parece tivemos um problema de conexão");
-            else{
-                alertar("Erro de aplicação");
-            }
-            console.log(result);
-        });
-    }
-};
 
 
-var tela = {
-    name               :"",
-    titulo             : "",
-    voltar             : true,
-    height             : 100,
-    width              : 100,
-    medidaHeight       : 'vh', //vh, px, % etc.
-    medidaWidth        : 'vw',
-    bg                 : '#f8f9fa',
-    bgHead             : '',
-    construir          : ()=>{
-                            
-                            if(!$('.tela-js').length){
-                                let html = $("<div/>",{'class':'tela-js position-fixed z-index-7', 'style':'height:'+tela.height+tela.medidaHeight+'; width:'+tela.width+tela.medidaWidth+'; background-color:'+tela.bg+';'})
-                                                .append($('<div/>',{'class':'chat-cabecalho tela-js-cabeca bg-primary col-12 p-3 text-light text-x-large text-center', 'style':"height:60px;"})
-                                                            .append((tela.voltar) ? $('<i/>',{class:'fa fa-arrow-left text-x-large mr-2 bg-primary position-absolute', 'style':"left:10px;", click:()=>{tela.hide()}}) : '')
-                                                            .append(tela.titulo))
-                                ;
-                                $('body').append(html);
-                            }else{
-                                $('.tela-js').css({'height':tela.height+tela.medidaHeight,'width': tela.width+tela.medidaWidth,'background-color':tela.bg});
-                                $('.tela-js .tela-js-cabeca')
-                                    .html('')
-                                    .append((tela.voltar) ? $('<i/>',{class:'fa fa-arrow-left text-x-large mr-2 bg-primary position-absolute', 'style':"left:10px;", click:()=>{tela.hide()}}) : '')
-                                    .append(tela.titulo)
-                                ;
-                            }
-                        },
-    append            :function(val){
-                            if($('.tela-js > .painel').length){
-                                $('.tela-js > .painel').append(val);
-                            }else{
-                                $('.tela-js').append($('<div/>',{class:'painel', 'style':'min-height:100%; min-width:100%;'}).append(val));
-                            }
-                        },
-    limparPainel    : ()=>{
-                            $('.tela-js > .painel').html("");
-                        },
-    hide          : function(){
-                        $('.tela-js').hide('slow');
-    },
-    show : function(val){
-        tela.construir();
-        $('.tela-js').show('slow'); 
-
-    },
-    /** 
-     * Para Realizar edição no cabeçalho da tela;
-     * ao chamar o metodo o cabeçalho padrão é retirado.
-     * @param paramHTML: recebe todo squema html que será colocado no lugar do cabecalho.
-     * caso vazio o cabecalho ficará vazio tambem.
-     * @returns tela
-    */
-    editeHead       :(paramHTML='')=>{
-        $(".tela-js-cabeca").html("").html(paramHTML);
-        return tela;
-    }
-};
 

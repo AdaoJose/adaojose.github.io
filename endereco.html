@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Endereço</title>
+    <script src="./js/jquery.js"></script>
+    <link rel="stylesheet" href="./css/bootstrap-4.3.1-dist/css/bootstrap.css">
+    <script src="./css/bootstrap-4.3.1-dist/js/bootstrap.min.js"></script>
+    <script src="https://kit.fontawesome.com/2912494906.js" crossorigin="anonymous"></script>
+</head>
+<body>
+    <!--Carrega os endereços dos usuarios apos clicar em finalizar-->
+
+    <script type="module">
+        import $jan from "./js/module/moduleJanelas/mod.janelas.js";
+        import config from "./js/config.js";
+        import modal from "./js/module/moduleBootstrapModal/modal.js";
+        
+        const $janela_endereco = $jan();
+        const $conf = config();
+        console.log($janela_endereco);
+        $janela_endereco.show();
+        $janela_endereco.setTitle( "Defina endereço de entrega");
+
+        var myHeaders = new Headers();
+        myHeaders.append("AppKey", "abcd");
+        myHeaders.append("AppId", "1");
+        myHeaders.append("Content-Type", "application/json");
+        myHeaders.append("Content-Type", "application/json");
+
+        var raw = JSON.stringify({"user":JSON.parse(localStorage.getItem("login"))});
+        console.log(raw);
+        
+        var requestOptions = {
+        method: 'POST',
+        headers: myHeaders,
+        body: raw,
+        redirect: 'follow'
+        };
+
+        fetch($conf.baseServerUrl()+"/api/user/getaddress", requestOptions)
+        .then(response => response.json())
+        .then((e)=>{
+            var $form = 
+            $("<form/>");
+
+            var $divRecebedor = 
+            $("<div/>",{
+                class:"form-group"
+            });
+            var $inputRecebedor = 
+            $("<input/>",{
+                id:"recebedor",
+                class:"form-control requirid",
+                "placeholder":"Nome de quem receberá",
+                "type":"text"
+            });
+
+            var $divCep = 
+            $("<div/>",{
+                class:"form-group"
+            });
+            var $inputCep = 
+            $("<input/>",{
+                id:"cep",
+                class:"form-control requirid",
+                "placeholder":"Cep",
+                "type":"text",
+                focusout:function(){
+                    let cep = 
+                    $(this).
+                    val();
+                    fetch("https://viacep.com.br/ws/"+cep+"/json").
+                    then(response=>response.json()).
+                    then(e=>{
+                        let $rua = 
+                        $("#rua");
+
+                        let $bairro = 
+                        $("#bairro");
+
+                        let $cidade = 
+                        $("#cidade");
+
+                        let $estado = 
+                        $("#estado");
+
+                        $rua.val(e.logradouro);
+                        $bairro.val(e.bairro);
+                        $cidade.val(e.localidade);
+                        $estado.val(e.uf);
+
+                    }).
+                    catch(console.log);
+
+                }
+            });
+
+            var $divRua = 
+            $("<div/>",{
+                class:"form-group"
+            });
+            var $inputRua = 
+            $("<input/>",{
+                id:"rua",
+                class:"form-control requirid",
+                "placeholder":"Rua",
+                "type":"text",
+                "disabled":"true"
+            });
+
+            var $divBairro = 
+            $("<div/>",{
+                class:"form-group"
+            });
+            var $inputBairro = 
+            $("<input/>",{
+                id:"bairro",
+                class:"form-control requirid",
+                "placeholder":"Bairro",
+                "type":"text",
+                "disabled":"true"
+            });
+
+            var $divCidade = 
+            $("<div/>",{
+                class:"form-group"
+            });
+            var $inputCidade = 
+            $("<input/>",{
+                id:"cidade",
+                class:"form-control requirid",
+                "placeholder":"Cidade",
+                "type":"text",
+                "disabled":"true"
+            });
+
+            var $divEstado = 
+            $("<div/>",{
+                class:"form-group"
+            });
+            var $inputEstado = 
+            $("<input/>",{
+                id:"estado",
+                class:"form-control requirid",
+                "placeholder":"Estado",
+                "type":"text",
+                "disabled":"true"
+            });
+
+            var $divNumero = 
+            $("<div/>",{
+                class:"form-group"
+            });
+            var $inputNumero = 
+            $("<input/>",{
+                id:"numero",
+                class:"form-control requirid",
+                "placeholder":"Numero da casa",
+                "type":"text"
+            });
+
+            var $divComplemento = 
+            $("<div/>",{
+                class:"form-group"
+            });
+            var $inputComplemento = 
+            $("<input/>",{
+                id:"complemento",
+                class:"form-control requirid",
+                "placeholder":"Complemento",
+                "type":"text"
+            });
+
+            var $formularioAddEndereco = 
+            $form.
+            append(
+                $divRecebedor.
+                append($inputRecebedor),
+
+                $divCep. 
+                append($inputCep),
+
+                $divRua. 
+                append($inputRua),
+
+                $divBairro. 
+                append($inputBairro),
+
+                $divCidade. 
+                append($inputCidade),
+
+                $divEstado. 
+                append($inputEstado),
+
+                $divNumero. 
+                append($inputNumero),
+
+                $divComplemento. 
+                append($inputComplemento)
+            );
+
+            var modalEndereco = 
+                modal({
+                    title:"Endereço", 
+                    body:$formularioAddEndereco,
+                    functionBtnSuccess:{
+                        click:()=>{
+                            let verificado = true;
+                            $(".requirid").
+                            each(function(index, data){
+                                if($(data).val()==""){
+                                    verificado = false;
+                                }
+                                
+                            })
+                            if(!verificado){
+                                alert("Todos os campos são de preenchimento obrigatorio.")
+                            }else{
+                                
+                                let endereco = 
+                                {
+                                    cep:$($inputCep).val(),
+                                    recebedor:$($inputRecebedor).val(),
+                                    rua:$($inputRua).val(),
+                                    numero:$($inputNumero).val(),
+                                    bairro:$($inputBairro).val(),
+                                    cidade:$($inputCidade).val(),
+                                    estado:$($inputEstado).val(),
+                                    complemento:$($inputComplemento).val(),
+                                    pais:"brasil"
+                                };
+                                if($($form).attr("id")!=undefined){//se for atualizar terá id
+                                    endereco.id = $($form).attr("id");
+                                }
+
+                                var myHeaders = new Headers();
+                                myHeaders.append("AppKey", $conf.appKey());
+                                myHeaders.append("AppId", $conf.appId());
+                                myHeaders.append("Content-Type", "application/json");
+
+                                var raw = JSON.
+                                        stringify({
+                                            "user":JSON.parse(localStorage.getItem('login')),
+                                            "controler":"newAddress",
+                                            "address":endereco
+                                        }
+                                    );
+
+                                var requestOptions = {
+                                method: 'POST',
+                                headers: myHeaders,
+                                body: raw,
+                                redirect: 'follow'
+                                };
+
+                                fetch($conf.baseServerUrl()+"/api/user/adderess", requestOptions)
+                                .then(response => response.json())
+                                .then(result => {
+                                    if(result.status=="success"){
+                                        //alertar("Endereço salvo!");
+                                            window.location.reload();
+                                    }
+                                })
+                                .catch(error => console.log('error', error));
+                                
+                                console.log(JSON.stringify(endereco));
+                                                                
+                             }
+                         }
+                    }
+                });
+
+
+            let $div  = $("<div/>", {
+                    class:"col mt-5 text-center"
+                });
+            let $ul = 
+                $("<ul/>", {
+                    class:"list-group",
+                });
+            // itera o retorno do servidor
+            if(e.length){
+
+            }
+            $.each(e, function(key, val){
+                console.log(val);
+                let $li = 
+                    $("<li/>", {
+                        class:"list-group-item list-group-item-action",
+                        id:val.id,
+                        click:()=>{
+                            //defino este endereco como padrão de entrega
+                            localStorage.setItem('entregaPadrão',val.id);
+                            //vai para a proxima pagina
+                            window.location.href = $conf.baseUrl()+"/pagamento.html";
+                        }
+                    });
+                
+                    
+                $div.append(
+                    $ul.
+                    append(
+                        $li.
+                        append(
+                            val.rua+"<br><small>CEP "+
+                            val.cep+
+                            " "+val.bairro+
+                            " "+val.cidade+
+                            "-"+val.estado+
+                            " casa n° "+val.numero+
+                            " </small><br>",
+                            
+                            $("<button/>",{
+                                "class":"btn btn-warning rounded-circle text-light",
+                                click:event=>{
+                                    $li.off("click");
+                                    let $res = window.confirm("Excluir este endereço?");
+                                    if($res){
+                                        
+                                        let endereco = 
+                                        {
+                                            id:val.id,//id obrigatorio para operação de delete  
+                                        };
+
+                                        var myHeaders = new Headers();
+                                        myHeaders.append("AppKey", $conf.appKey());
+                                        myHeaders.append("AppId", $conf.appId());
+                                        myHeaders.append("Content-Type", "application/json");
+
+                                        var raw = JSON.
+                                                stringify({
+                                                    "user":JSON.parse(localStorage.getItem('login')),
+                                                    "controler":"deleteAddress",
+                                                    "address":endereco
+                                                }
+                                            );
+
+                                        var requestOptions = {
+                                        method: 'POST',
+                                        headers: myHeaders,
+                                        body: raw,
+                                        redirect: 'follow'
+                                        };
+
+                                        fetch($conf.baseServerUrl()+"/api/user/adderess", requestOptions)
+                                        .then(response => response.json())
+                                        .then(result => {
+                                            if(result.status=="success"){
+                                                    alert("excluido!");
+                                                    window.location.reload();
+                                            }else{
+                                                console.log(result);
+                                            }
+                                        })
+                                        .catch(error => console.error(error));
+                                    }//fim de if $res
+                                }
+                            }).
+                            append(
+                                '<i class="fas fa-times"></i>'
+                            ),
+
+                            $("<button/>",{
+                                class:"btn btn-primary",
+                                click:()=>{
+
+                                    $li.off("click");
+                                    $($form).attr("id",val.id);
+                                    $($inputCep).val(val.cep),
+                                    $($inputRecebedor).val(val.recebedor),
+                                    $($inputRua).val(val.rua),
+                                    $($inputNumero).val(val.numero),
+                                    $($inputBairro).val(val.bairro),
+                                    $($inputCidade).val(val.cidade),
+                                    $($inputEstado).val(val.estado),
+                                    $($inputComplemento).val(val.complemento),
+                                    
+                                    modalEndereco.show();
+                                }
+                            }).
+                            append(
+                                "Editar"
+                            )
+                        )
+                    )
+                );
+                
+            });
+
+            var $btn =
+            $("<button/>",{
+                class: "btn btn-outline-primary mt-5",
+                label:"Cadastre novo endereço",
+                click:()=>{
+                    modalEndereco.show();
+                    $($form).removeAttr("id");
+                    
+                }
+            });
+            $div.append($btn.append("Cadastre novo endereço"));
+            $janela_endereco.append($div);
+            var modalEndereco = modal({titulo:"Titulo", body:"teste"});
+            
+        }).catch(error => console.log(error));
+
+        
+
+        
+        
+
+    </script>
+</body>
+</html>

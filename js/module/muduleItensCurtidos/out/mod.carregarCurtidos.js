@@ -75,6 +75,7 @@ export default function carregarCurtidos(produtos){
     tela.limparPainel();
 
     for(var [key, value] of Object.entries(produtos)){//correndo o Json retorno 
+        cosole.log(value);
         if(produtos.length>0){
             produto.todos[value.codigo] = value;
             /**construindo o html */
@@ -112,7 +113,7 @@ export default function carregarCurtidos(produtos){
                             append(
                                 $("&lt;i/>",{
                                     "class":"fa fa-heart cat-curtir text-x-large z-index-6 text-primary m-auto",
-                                    "data-id":value.codigo,
+                                    "data-id":value.id,
                                     "data-favoritado":value.favoritado,
                                     click:function(){curtirProduto($(this));}
                                 }),
@@ -130,7 +131,7 @@ export default function carregarCurtidos(produtos){
                                 "data-descricao":value.descricao,
                                 "data-categoria":value.categoria,
                                 "data-tamanho-valor":JSON.stringify(value.tamanho),
-                                "data-id":value.codigo,
+                                "data-id":value.id,
                                 "data-custo-envio":value.valor_frete,
                                 //"data-estoque":value.estoque,
                                 "data-img":value.img,
@@ -167,7 +168,7 @@ export default function carregarCurtidos(produtos){
                             "data-descricao":value.descricao,
                             "data-categoria":value.categoria,
                             "data-tamanho-valor":JSON.stringify(value.tamanho),
-                            "data-id":value.codigo,
+                            "data-id":value.id,
                             "data-custo-envio":value.valor_frete,
                             //"data-estoque":value.estoque,
                             "data-img":value.img,

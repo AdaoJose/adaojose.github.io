@@ -342,14 +342,14 @@
 <script src="js/expo_produto.js"></script>
 <script src="css/bootstrap-4.3.1-dist/js/bootstrap.js"></script>
 <script>
-        if(localStorage.getItem("usuario")!=undefined &&localStorage.getItem("usuario")!=null && localStorage.getItem("usuario")!=""){
-            app = JSON.parse(localStorage.getItem("usuario"));
+        if(localStorage.getItem("login")!=undefined &&localStorage.getItem("usuario")!=null && localStorage.getItem("usuario")!=""){
+            app = JSON.parse(localStorage.getItem("login"));
             vaParaTela(".catalogo, .navbar, .expo-ico-carrinho-show");
 
              produto.getCatalog();
         }
         else{
-            abrirUrl("login.html");
+            //abrirUrl("login.html");
             console.log('não logado');
         } 
 $(window).ready(function(){

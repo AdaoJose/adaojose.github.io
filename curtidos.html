@@ -28,49 +28,15 @@
           </div>
         </div>
       </div>
-      <div class="expo-ico-carrinho-show bg-light border text-primary mb-5 z-index-8" onclick="abrirCesta()">
+      <div class="expo-ico-carrinho-show bg-light border text-primary mb-5 z-index-8">
         <i class="fa fa-chevron-circle-left mt-1" aria-hidden="true"></i>
       </div>
       
     <script src="js/jquery.js"></script>
-    <script src="js/expo_produto.js"></script>
-    <script src="js/functions_expo.js"></script>
     <script src="css/bootstrap-4.3.1-dist/js/bootstrap.js"></script>
     <script type="module" src="js/main.curtidos.js">
     </script>
-    <script type="module">
-      import janelas from './js/module/moduleJanelas/mod.janelas.js';
-      import carregarProdutos from './js/module/moduleProduto/mod.produto.js';
-      
-      var telateste = janelas();
-      telateste.titulo = 'olamundo';
-      telateste.show();
-      telateste.editeTitulo("Testando");
-      telateste.editeWidth("50%")
-      telateste.editeHeight("50%")
-      console.log(telateste.id);
-
-      var telateste1 = janelas();
-      telateste1.titulo = 'Tela 1';
-      telateste1.show();
-      telateste1.editeTitulo("Tela 1 teste");
-      telateste1.editeWidth("60%")
-      telateste1.editeHeight("60%")
-      console.log(telateste.id);
-
-      var home_janela = janelas();
-      home_janela.name = "home_janela";
-      home_janela.show();
-      home_janela.editeHead(
-        '<nav class=" z-index-5 position-fixed navbar navbar-principal navbar-lg-expand navbar-light col-12 border" style="height: 60px;"><i class="text-x-large fa fa-bars notificacao  text-light btn-nav"></i><i class="text-x-large fa fa-home notificacao  text-light inicio"></i><i class="text-x-large fa fa-search text-light notificacao ml-5 mr-n-5 pesquisar"></i><i class="text-x-large fa fa-bell btn-notificacao notificacao text-light"><span class="badge badge-primary text-xx-small notificacao-numero"></span></i><i class="text-x-large fa fa-shopping-cart text-light notificacao btn-show-shoppingcart mr-2" onclick="abrirCesta()"></i></nav>'
-      );
-      var produtos  = carregarProdutos(home_janela).then(response=>{
-          //concluido
-      });
-      home_janela.barraDeFerramentasHide();
-      
-      console.log(carregarProdutos());
-    </script>
+    
     
 </body>
 </html>

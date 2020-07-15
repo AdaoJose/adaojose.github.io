@@ -1,0 +1,15 @@
+{
+    "name": "projeto-dinibir/dinibir",
+    "description": "\"Site e-comerce que consome serviso WS\"",
+    "type": "project",
+    "authors": [
+        {
+            "name": "Adeo Jose",
+            "email": "adao.jose123.a.r@gmail.com"
+        }
+    ],
+    "minimum-stability": "dev",
+    "require": {
+        "coffeecode/router":"*"
+    }
+}

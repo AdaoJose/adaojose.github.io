@@ -25,7 +25,7 @@
                 <div class="form-group">
                     <input class="form-control text-center text-primary x-large" id="senha-login" type="password" placeholder="Senha">
                 </div>
-                <button class="btn btn-outline-primary btn-login col-10 text-large mt-5 " onclick="login()">Login</button>
+                <button class="btn btn-outline-primary btn-login col-10 text-large mt-5 " >Login</button>
                 <button class="btn-cad btn text-primary btn-login-cadastrar col-12 " onclick="$('.tela-cadastro').fadeIn()">Não tenho conta</button>
             
         </fieldset>
@@ -56,14 +56,48 @@
     <script src="js/jquery.js"></script>
     <script src="js/expo_produto.js"></script>
     <script src="js/functions_expo.js"></script>
-    <script>
-            function login(){
-                usuario.login($("#email-login").val(),$("#senha-login").val());
-            }
+    <script type="module">
+        import config from "./js/config.js"
+        import usuario from "./js/module/moduleUsuario/mod.usuario.js";
+        
+        var $conf = config();
+        $(".btn-login").click(()=>{
+            let email  = 
+                $("#email-login").
+                val()
+            ;
+
+            let senha =  
+                $("#senha-login").
+                val()
+            ;
+            
+            usuario().login(email, senha).then(e=>{
+                if(e){
+                    //login sucesso
+                    abrirUrl ($conf.indexPage());
+                }else{
+                    //login falhou
+                }
+            }).catch(e=>{
+                //rede falhou
+            });
+                
+            
+        });
+
+        /**cadastro de usuario **/
+        $(".cad-user").click(function(){
+            let nome  = $(".form-cadastro #nome").val();
+            let email = $(".form-cadastro #email").val();
+            let senha = $(".form-cadastro #senha").val();
+            usuario().cadastrar(nome, email, senha);
+        });
+            
             
     </script>
 
-<script>
+<script >
         if("serviceWorker" in navigator){
             navigator.serviceWorker.register('serviceWorker.js').then(function(){
                 console.log("Service worker registrado");

@@ -1,8 +1,57 @@
+import config from "../../config.js";
+import alertar from '../alertar/mod.alertar.js';
 /**
  * @description 
  * O objeto carrinho será o responssavel por gerenciar o carrinho de compras 
  */
 var carrinho = {
+    /**
+     * Metodo responsavel por remover produto da lista de compras
+     * @param id id do produto
+     */
+    remove:function(id){
+        return new Promise((resolve, reject)=>{
+            console.log("[carrinho.remove] inicializando...");
+            let $conf  = config();
+
+            let myHeaders = new Headers();
+            myHeaders.append("AppKey", $conf.appKey());
+            myHeaders.append("AppId", $conf.appId());
+            myHeaders.append("Content-Type", "application/json");
+
+            let raw = JSON.stringify({"products":{"id":id},"user":JSON.parse(localStorage.getItem("login"))});
+
+            let requestOptions = {
+            method: 'POST',
+            headers: myHeaders,
+            body: raw,
+            redirect: 'follow'
+            };
+            let uri = $conf.baseServerUrl()+"/api/cart/remove";
+            
+            fetch(uri, requestOptions)
+            .then(response => response.json())
+            .then(result =>{
+                // console.log(result);
+
+                $("#"+id).
+                removeClass("destaque");//remove destaque do produto removido
+                console.log("[carrinho.remove] finalizado...");
+                resolve("Este item foi removido");
+            })
+            .catch(error => {
+                console.log("[carrinho.remove] finalizado...");
+                if(!navigator.onLine){
+                    reject("Falha! Você não tem uma conexão.");
+                }else{
+                    reject("Falha! verifique a sua conexão.");
+                }
+            });
+
+        });//fim de promise
+        
+        
+    },
     /** 
      * @param _HTMLprodTag
      * parametro qua contenha todos os datas necessario nele
@@ -11,6 +60,7 @@ var carrinho = {
      * @param _HTMLprodTag pode ser $(this) ou this ou até $('.btn_add_to_cart')
     */
     add:_HTMLprodTag=>{
+        // console.log($(_HTMLprodTag).attr('data-id'));
         // caso aindo não tenha estrutura adiciono a padrão
         if(!$("#addCarrinho").length){
             $.get("./template/carrinhoAdd.tpl", function(data){
@@ -20,7 +70,8 @@ var carrinho = {
 
         var paramHtml = $(_HTMLprodTag);
         var botaoConfirmar = $(".addCarrinhoConfirmar");//botão clicado ao finalizar a compra
-
+        
+        /** informações do produto é adicionado no botão */
         botaoConfirmar.
         attr("data-prod-id", paramHtml.attr("data-id"));
 
@@ -33,39 +84,52 @@ var carrinho = {
 
         let txtPreco  = ()=>{
                     let obj = JSON.parse( paramHtml.attr("data-tamanho-valor"));
-                    let vp = parseFloat(obj[0][Object.keys(obj[0])[0]].valor);
+                    let vp = parseFloat(
+                                obj[
+                                    Object.keys(obj)[0]//pega o primeiro objto
+                                ].valor
+                            );
 
                     botaoConfirmar.attr("data-prod-valor", vp);
 
-                    botaoConfirmar.attr("data-prod-tamanho", Object.keys(obj[0])[0]); 
+                    botaoConfirmar.attr("data-prod-tamanho", Object.keys(obj)[0]); 
 
                     botaoConfirmar.attr("data-quantidade", 1);
                     
-                    return Object.keys(obj[0])[0]+" "+vp.toLocaleString('pt-BR',{style:"currency", currency:"BRL"});
+                    return Object.keys(obj)[0]+" "+vp.toLocaleString('pt-BR',{style:"currency", currency:"BRL"});
                 }
         $(".addCarrinhoPreco").text(txtPreco);
         $("#addCarrinhoTitulo").html(paramHtml.attr("data-nome"));
-        let carregando  = $("<div/>",{"class":"text-center"})
-                            .append($("<div/>",{
-                                    "class":"spinner-border text-primary",
-                                    "role":"status"
-                                })
-                                .append($("<span/>",{
-                                        "class":"sr-only"
-                                    })
-                                    .append("Loading..."))
-                            );
+        let carregando  = $("<div/>",{
+            "class":"text-center"
+        })
+        .append($("<div/>",{
+                "class":"spinner-border text-primary",
+                "role":"status"
+            })
+            .append($("<span/>",{
+                    "class":"sr-only"
+                })
+                .append("Loading..."))
+        );
+
+
+        let $divProduto = $("<div/>",{"class":"row"});
+        let $divImg = $("<div>",{"class":"col-12 text-center"});
+        let $img = $("<img/>",{
+            "src":()=>{
+                return(paramHtml.attr("data-img").split(',')[0]);
+            },
+            "class":"img-fluid addCarrinhoImg"
+           });
+        
+
         let htmlExpoProd
-        =$("<div/>",{"class":"row"})
-         .append(
-             $("<div>",{"class":"col-12 text-center"})
+        =
+         $divProduto.append(
+             $divImg
                  .append(
-                    $("<img/>",{
-                     "src":()=>{
-                         return(paramHtml.attr("data-img").split(",")[0]);
-                     },
-                     "class":"img-fluid addCarrinhoImg"
-                    })
+                    $img
                  )
             ,$("<div/>",{"class":"col-12 addCarrinhoNome border lead text-primary"})
              .append(
@@ -96,11 +160,12 @@ var carrinho = {
                       $("<span>",{"class":"input-group-text bg-primary text-light"})
                       .append("Tamanho   ")
                  ),
+
                  $("<select/>",{
                      "class":"form-control addCarrinhoSelectTamanho",
                      "arial-label":"Escolha o tamanho do produto",
                      change:function(){
-                         console.log($(this).children("option:selected").attr("data-cor"));
+                         //console.log($(this).children("option:selected").attr("data-cor"));
                         let option = "";// usado para guardar as options dos selects
 
                         let cor  = 
@@ -128,14 +193,32 @@ var carrinho = {
                  .append(()=>{
                      let option = "";
                      let obj = JSON.parse( paramHtml.attr("data-tamanho-valor"));
-                    for (var property in Object.values(obj)){
-                        Object.entries(obj[property]).forEach(([key, value]) => { 
-                            let vp = parseFloat(value.valor);
-                            let cor_quantidade = JSON.stringify(value.cor_quantidade);
-                            option+="<option data-cor="+cor_quantidade+" value="+key+"> "+key+" "+vp.toLocaleString('pt-BR',{ style: 'currency', currency: 'BRL' })+"</option>";
-                        })
+                     console.log(obj);
+                     for (var [key, value] of Object.entries(obj)) {
+
+                        let vp = 
+                        parseFloat(value.valor);
+
+                        let cor_quantidade = 
+                        JSON.
+                        stringify(value.cor_quantidade);
+
+                        option+=
+                            "<option data-cor="+
+                            cor_quantidade+
+                            " value="+key+"> "+key+" "+vp.toLocaleString('pt-BR',{ style: 'currency', currency: 'BRL' })+"</option>";
+                         console.log(key);
+                         console.log(value);
+                         
+                     }
+                    // for (var property in Object.values(obj)){
+                    //     Object.entries(obj[property]).forEach(([key, value]) => { 
+                    //         let vp = parseFloat(value.valor);
+                    //         let cor_quantidade = JSON.stringify(value.cor_quantidade);
+                    //         option+="<option data-cor="+cor_quantidade+" value="+key+"> "+key+" "+vp.toLocaleString('pt-BR',{ style: 'currency', currency: 'BRL' })+"</option>";
+                    //     })
                        
-                      }
+                    //   }
                       return(option);
                  })
              )
@@ -148,22 +231,26 @@ var carrinho = {
                  ),
                  $("<select/>",{ 
                      "class":"form-control addCarrinhoSelectCor",
-                     "arial-label":"Escolha acor do produto"
+                     "arial-label":"Escolha a cor do produto"
                  })
                  .append(()=>{
                     let option = "";
                     let obj = JSON.parse( paramHtml.attr("data-tamanho-valor"));
+
                     //como o primeiro item a ser pego é o da posição zero pego a cor da mesma posição
-                    Object.entries(obj[0]).forEach(([key, value]) => {
-                        let x  = 0 ;
-                        Object.entries(value.cor_quantidade).forEach(([cor, quantia])=>{
-                            
-                            if(x==0) botaoConfirmar.attr("data-prod-cor", cor);
-                            
-                            option+="<option data-max="+quantia+" value="+cor+"> "+cor+ "</option>";
-                            x++;
-                        })
+                    console.log(obj);
+                    
+                    let objPrimeiraPosicao = obj[Object.keys(obj)[0]];
+                    
+                    let x  = 0 ;
+                    Object.entries(objPrimeiraPosicao.cor_quantidade).forEach(([cor, quantia])=>{
+                        
+                        if(x==0) botaoConfirmar.attr("data-prod-cor", cor);
+                        
+                        option+="<option data-max="+quantia+" value="+cor+"> "+cor+ "</option>";
+                        x++;
                     })
+                    
                       
                      return(option);
                  })
@@ -219,10 +306,15 @@ var carrinho = {
         $(".addCarrinhoBody").html(carregando);
         setTimeout(()=>{
             $(".addCarrinhoBody").html("").html(htmlExpoProd);
-            $(".addCarrinhoSelectTamanho").change(function(){
-                //alert("Mudou");
-                });
         },2000);
+        botaoConfirmar.
+        off("click").
+        click(
+            function(){
+                console.log("[.addCarrinhoConfirmar] clicado, ", "chamando carrinho.confirmar(this)");
+                carrinho.confirmar(botaoConfirmar);
+            }
+        );
     },
     /**
      * @author Adão José
@@ -234,48 +326,117 @@ var carrinho = {
     confirmar:(self)=>{
         let categoriaProdutoSelecionado;
         let categoria  = $(".addCarrinhoBody").attr("data-categoria").toLowerCase();//categoria == categoria do produto
-
+        
         //para cada categoria o tratamento será diferenciado,
         //pois podem haver campos diferenciado dependendo da categroria 
-        switch(categoria){
-            
-            case "vestimenta": //trata produto como vestimentas
-                $('#addCarrinho').modal('hide');
-                
-                let produto = {
-                    codigo: $(self).attr("data-prod-id"), 
-                    nome: $(self).attr("data-prod-nome"),
-                    valor: $(self).attr("data-prod-valor"),
-                    tamanho: $(self).attr("data-prod-tamanho"), 
-                    cor: $(self).attr("data-prod-cor"),
-                    quantidade: $(self).attr("data-quantidade")
-                }
-                var dataOBJForSend = {"products":{"id":produto.codigo,"quantity":produto.quantidade,"size":produto.tamanho},user:JSON.parse(localStorage.getItem("usuario"))};
-                $.post({"url":"https://localhost/saory-api/api/cart/add",
-                        "headers":headersApp,
-                        "data":JSON.stringify(dataOBJForSend)
-                }).
-                done(
-                    (d)=>{
-                        console.log(d);
-                        if(d.status=='error'){//if return erro on server
-                            alertar("Erro ao adicionar a lista de compras. Estamos trabalhando para resolver!");
-                        }else{
-                            alertar(produto.nome+" adicionado a lista de compras!");
-                            $(".cat-carrinho[data-id="+produto.codigo+"]").removeClass("text-primary").addClass("text-success");
-                        }
-                    }
-                ).
-                fail(
-                    (d,statusText, xhr)=>{
-                        console.log(d);
-                        alertar(produto.nome+" não adicionado! Erro de conexão!");
-                    }
-                );
+        let $conf = config();
+        var myHeaders = new Headers();
+            myHeaders.append("AppKey", $conf.appKey());
+            myHeaders.append("AppId", $conf.appId());
+            myHeaders.append("Content-Type", "application/json");
+        let produto = {
+            id: $(self).attr("data-prod-id"), 
+            nome: $(self).attr("data-prod-nome"),
+            valor: $(self).attr("data-prod-valor"),
+            tamanho: $(self).attr("data-prod-tamanho"), 
+            cor: $(self).attr("data-prod-cor"),
+            quantidade: $(self).attr("data-quantidade")
+        }  
+        var raw = JSON.stringify({ 
+            user:JSON.parse(localStorage.getItem("login")),
+            "products":{"id":produto.id,"quantity":produto.quantidade,"size":produto.tamanho, "color    ":produto.cor }
+        });
 
-            break;
-        }
+        let requestOptions = {
+            method: 'POST',
+            headers: myHeaders,
+            body: raw,
+            redirect: 'follow'
+        };
+        
+        let urlServer  = $conf.baseServerUrl()+"/api/cart/add";
+
+        fetch(urlServer , requestOptions).
+        then(response=>response.json()).
+        then((d)=>{
+            //console.log(d);
+            if(d.status=='error'){//if return erro on server
+                alertar("Erro ao adicionar a lista de compras. Estamos trabalhando para resolver!");
+                console.log(d);
+            }else{
+                alertar(produto.nome+" adicionado a lista de compras!");
+                $(".cat-carrinho[data-id="+produto.id+"]").removeClass("text-primary").addClass("text-success");
+            }
+        }).catch((d)=>{
+            console.log(d);
+            alertar(produto.nome+" não adicionado! Erro de conexão!");
+        })
+        
+        $('#addCarrinho').modal('hide');
+                
+                
+
+            
+    },
+    /**
+     * Retorna todos itens deste usuario adicionados a lista de compras
+     * @returns JSON OBJECT
+     */
+    listaDeCompras(){
+        return new Promise((resolve,reject)=>{
+            let $conf = config();
+            var myHeaders = new Headers();
+                myHeaders.append("AppKey", $conf.appKey());
+                myHeaders.append("AppId", $conf.appId());
+                myHeaders.append("Content-Type", "application/json");
+                
+            var raw = JSON.stringify({ user:JSON.parse(localStorage.getItem("login"))});
+
+            let requestOptions = {
+                method: 'POST',
+                headers: myHeaders,
+                body: raw,
+                redirect: 'follow'
+            };
+            
+            let urlServer  = $conf.baseServerUrl()+"/api/cart/showList";
+
+            return fetch(urlServer , requestOptions).
+                    then(response => response.json()).
+                    then(e=>{
+                        //console.log(e);
+                        //Servidor retornou erro
+                        if(e.status=="error"){
+                            console.error("[carrinho.listaDeCompras] Error..." , e);
+                            reject("Erro ao retornar lista de compra. Estamos trabalhando para solucionar");
+                        }
+                        //cesta conseguiu pegar produtos
+                        else{
+                            console.log("[carrinho.listaDeCompras] produtoscarregados", e);
+                            resolve(e);
+                        }
+                            
+                    }).
+                    catch(e=>{
+                        console.error("[cesta] Erro ao lançar requisição");
+                        console.error(e);
+                        let msg  = "";
+                        if(!navigator.onLine){
+                            msg  = "Conecte a uma rede e tente novamente";
+                        }else{
+                            msg = "Verifique sua conexão com a internet!";
+                        }
+                        reject (msg);
+                    })
+        })
     }
 }
 
+
+
+
+
+    
+
 export default carrinho;
+

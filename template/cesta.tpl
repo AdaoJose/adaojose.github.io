@@ -15,7 +15,7 @@
           <button class="col-12 btn btn-primary btn-f-compra">Finalizar</button>
       </div>
       <!--BTN FECHA O CARRINHO-->
-      <div class="expo-ico-carrinho-hide bg-light border text-primary mb-5" onclick="fecharCesta()">
+      <div class="expo-ico-carrinho-hide bg-light border text-primary mb-5" >
               <i class="fa fa-chevron-circle-right mt-1" aria-hidden="true"></i>
       </div>
       

@@ -8,76 +8,42 @@ import curtirProduto from '../moduleProduto/mod.curtir.js';
  * para carregar produtos de categorias diferentes tipo: Curtidos, padrão, ou até alguma outra categoria que venha a surgir;
  * @param value {objeto contendo as info para construção do html geralmente vida do server e tratada com um for ou foreach se for o caso} 
  * @returns HTMLObject
- * @dependence Bootstrap, FontAwesome, Jquery, function fnOrdenarTamanhoPorValor(), modules carrinho, compartilharProduto, curtirProduto
+ * @dependence Bootstrap, FontAwesome, Jquery, modules carrinho, compartilharProduto, curtirProduto
  */
 export default function esquemaHtmlProduto(value){
-    let random = Math.
-        floor(
-            Math.
-            random() * 65536
+        let random = Math.
+            floor(
+                Math.
+                random() * 65536
         );
-    
-    return $("<div/>",{
-        "class":"cat-produto col-12  mr-auto ml-auto col-md-2 mb-4 pt-3 z-index-2",
-        "id":value.codigo,
-    }).
-    append(
-        $("<figure/>",{
-            "class":"cat-img-block text-center",
-            id:"img_block"+value.codigo+"_"+random,
-        })
-        .append(
-                //pego apenas a primeira string do value.codigo
-                $("<legend/>",{
-                    "class":"cat-legend text-light col-12 bg-primary"
-                }).
-                append(()=>{
-                    let Ordenado = fnOrdenarTamanhoPorValor(value.tamanho);
+        var $btnCesta = $("<i/>",{
+            "class":"fa fa-cart-plus text-primary text-x-large cat-carrinho m-auto",
+            "data-nome":value.nome,
+            "data-descricao":value.descricao,
+            "data-categoria":value.categoria,
+            "data-tamanho-valor":JSON.stringify(value.tamanho),
+            "data-id":value.id,
+            "data-custo-envio":value.valor_frete,
+            //"data-estoque":value.estoque,
+            "data-img":value.img,
+            "data-nota":value.nota,
+            "data-tot-avaliacao":value.numero_avaliacao,
+            click:function(){carrinho.add(this);}
+        });
 
-                    return(
-                        "R$ "+
-                        Ordenado[0]
-                        [
-                            Object.
-                            keys(Ordenado[0])
-                        ]
-                        ["valor"]
-                    );
+        var $btnCompartilhar = $("<i/>",{   
+            "class":"fa fa-share-alt cat-share text-primary text-large m-auto",
+            click:function(){ compartilharProduto(this)}
+        });
 
-                }),
-                $("<div/>",{"class":"cat-social"}).
-                append(
-                    $("<i/>",{
-                        "class":"fa fa-heart cat-curtir text-x-large z-index-6 text-primary m-auto",
-                        "data-id":value.codigo,
-                        "data-favoritado":value.favoritado,
-                        click:function(){curtirProduto($(this));}
-                    }),
-                /**
-                 * ****************************
-                 *        COMPARTILHAR        *
-                 * ****************************
-                 */
-                $("<i/>",{"class":"fa fa-share-alt cat-share text-primary text-large m-auto",
-                    click:function(){ compartilharProduto(this)}
-                }),
-                $("<i/>",{
-                    "class":"fa fa-cart-plus text-primary text-x-large cat-carrinho m-auto",
-                    "data-nome":value.nome,
-                    "data-descricao":value.descricao,
-                    "data-categoria":value.categoria,
-                    "data-tamanho-valor":JSON.stringify(value.tamanho),
-                    "data-id":value.codigo,
-                    "data-custo-envio":value.valor_frete,
-                    //"data-estoque":value.estoque,
-                    "data-img":value.img,
-                    "data-nota":value.nota,
-                    "data-tot-avaliacao":value.numero_avaliacao,
-                    click:function(){carrinho.add(this);}
-                })
-            )  
-        ),//fim de figure
-        $("<div/>",{
+        var $btnCurtir =  $("<i/>",{
+            "class":"fa fa-heart cat-curtir text-x-large z-index-6 text-primary m-auto",
+            "data-id":value.id,
+            "data-favoritado":value.favoritado,
+            click:function(){curtirProduto($(this));}
+        });
+
+        var $divNome = $("<div/>",{
             "class":"cat-prod-title text-primary text-truncate",
             click:function(e){
                 produto.
@@ -89,12 +55,14 @@ export default function esquemaHtmlProduto(value){
                 fadeOut("slow");
             }
         }).
-        append(value.nome),
-        $("<div/>",{
+        append(value.nome);
+
+        var $divDescricao = $("<div/>",{
             "class":"cat-prod-descricao  text-truncate"
         }).
-        append(value.descricao),
-        $("<div/>",{
+        append(value.descricao);
+
+        var $divAdd = $("<div/>",{
             "class":"cat-add-to-cart col-12 p-2"
         }).
         append(//btn auxiliar adicionar ao carrinho 
@@ -104,7 +72,7 @@ export default function esquemaHtmlProduto(value){
                 "data-descricao":value.descricao,
                 "data-categoria":value.categoria,
                 "data-tamanho-valor":JSON.stringify(value.tamanho),
-                "data-id":value.codigo,
+                "data-id":value.id,
                 "data-custo-envio":value.valor_frete,
                 //"data-estoque":value.estoque,
                 "data-img":value.img,
@@ -115,49 +83,90 @@ export default function esquemaHtmlProduto(value){
             append($("<i/>",{
                 "class":"fa fa-cart-plus"
             }))
-        ),
+        );
+
+        var $divExpandeDescricao = $("<div/>",{"class":"btn-expand text-center col-12",
+        click:function(){
+            $(".btn-expand i").
+            not($(this).
+            children()).
+            removeClass("fa-angle-up").
+            addClass("fa-angle-down");
+
+            $(this).children().
+            toggleClass("fa-angle-up fa-angle-down");
+            
+            $(".cat-add-to-cart").
+            not($(this).
+                siblings(".cat-add-to-cart")
+            ).
+            hide("slow");
+
+            $(".cat-prod-descricao").
+            not($(this).
+            siblings(".cat-prod-descricao")).
+            addClass("text-truncate");//truca a descricao
+
+            $(".cat-prod-title").
+            not($(this).
+            siblings(".cat-prod-title")).
+            addClass("text-truncate");//truca o nome
+
+            $(this).
+            siblings(".cat-add-to-cart").
+            toggle("slow");
+
+            $(this).
+            siblings().
+            toggleClass("text-truncate");
+
+        }//fim click:
+    }).
+    append($("<i>",{
+            "class":"fa fa-angle-down"
+        })
+    );
+
+    return $("<div/>",{
+        "class":"cat-produto col-12  mr-auto ml-auto col-md-2 mb-4 pt-3 z-index-2",
+        "id":value.id,
+    }).
+    append(
+        $("<figure/>",{
+            "class":"cat-img-block text-center",
+            id:"img_block"+value.id+"_"+random,
+        })
+        .append(
+                $("<img/>",{"src":value.img[0], "class":"cat-img img-fluid bg-light z-index-5"}), //imagem do produto
+                //pego apenas a primeira string do value.id
+                $("<legend/>",{
+                    "class":"cat-legend text-light col-12 bg-primary"
+                }).
+                append(()=>{
+                    let Ordenado = value.tamanho;
+
+                    return(
+                        "R$ "+
+                        Ordenado[
+                            Object.
+                            keys(Ordenado)[0]
+                        ]
+                        ["valor"]
+                    );
+
+                }),
+                $("<div/>",{"class":"cat-social"}).
+                append(
+                $btnCurtir,
+                $btnCompartilhar,
+                $btnCesta
+            )  
+        ),//fim de figure
+        $divNome ,
+        $divDescricao,
+        $divAdd,
         //btn expande esconde
-        $("<div/>",{"class":"btn-expand text-center col-12",
-            click:function(){
-                $(".btn-expand i").
-                not($(this).
-                children()).
-                removeClass("fa-angle-up").
-                addClass("fa-angle-down");
-
-                $(this).children().
-                toggleClass("fa-angle-up fa-angle-down");
-                
-                $(".cat-add-to-cart").
-                not($(this).
-                    siblings(".cat-add-to-cart")
-                ).
-                hide("slow");
-
-                $(".cat-prod-descricao").
-                not($(this).
-                siblings(".cat-prod-descricao")).
-                addClass("text-truncate");//truca a descricao
-
-                $(".cat-prod-title").
-                not($(this).
-                siblings(".cat-prod-title")).
-                addClass("text-truncate");//truca o nome
-
-                $(this).
-                siblings(".cat-add-to-cart").
-                toggle("slow");
-
-                $(this).
-                siblings().
-                toggleClass("text-truncate");
-
-            }//fim click:
-        }).
-        append($("<i>",{
-                "class":"fa fa-angle-down"
-            })
-        )
+        $divExpandeDescricao
     );
 }
 
@@ -199,6 +208,7 @@ export default function esquemaHtmlProduto(value){
  */ 
 
 function fnOrdenarTamanhoPorValor(ObjTamanho){
+    console.log(ObjTamanho);
     return ObjTamanho.sort(function(a,b){ 
     return(a[Object.keys(a)]["valor"] - b[Object.keys(b)]["valor"]);//compara valor a com valor b
     })

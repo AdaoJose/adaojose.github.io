@@ -9,46 +9,44 @@
  * mais exemplos são encontrados na documentação
  */
 
-export default function janelas(){
+export default function $jan(){
     let idJanela = 'JA'+parseInt(Math.random()*2000);
     let self = {
         name               :"",
-        titulo             : "",
-        voltar             : true,
-        height             : 100,
-        width              : 100,
-        medidaHeight       : 'vh', //vh, px, % etc.
-        medidaWidth        : 'vw',
+        title             : "Janelas JS",
+        btnBack             : true,
+        height             : '100vh',
+        width              : '100vw',
         bg                 : '#f8f9fa',
         bgHead             : '',
         id                 : idJanela,
-        construir          : ()=>{
+        construct          : ()=>{
                                 if(!$('#'+self.id).length){//verifico de esta janela ja foi constrida
                                     let html = $("<div/>",
                                         {
                                             'id':self.id,
                                             'name':self.name,
-                                            'class':'janelas position-fixed z-index-7', 'style':'height:'+self.height+self.medidaHeight+'; width:'+self.width+self.medidaWidth+'; background-color:'+self.bg+';'
+                                            'class':'janelas position-fixed z-index-7', 'style':'height:'+self.height+'; width:'+self.width+'; background-color:'+self.bg+';'
                                         }).
                                         append(
                                             $('<div/>',
                                                 {'class':'chat-cabecalho cabecalho-janelas bg-primary col-12 p-3 text-light text-x-large text-center', 'style':"height:60px;"}
                                             ).
-                                            append((self.voltar) ? $('<i/>',{class:'fa fa-arrow-left text-x-large mr-2 bg-primary position-absolute', 'style':"left:10px;", click:()=>{self.hide()}}) : '').
+                                            append((self.btnBack) ? $('<i/>',{class:'fa fa-arrow-left text-x-large mr-2 bg-primary position-absolute', 'style':"left:10px;", click:()=>{self.hide()}}) : '').
                                             append($('<span/>',{'class':'titulo-janelas'}).
-                                                append(self.titulo
+                                                append(self.title
                                             ))
                                         );
                                     $('body').append(html);
                                 }else{
                                     $('#'+self.id).
-                                    css({'height':self.height+self.medidaHeight,'width': self.width+self.medidaWidth,'background-color':self.bg});
+                                    css({'height':self.height,'width': self.width,'background-color':self.bg});
                                     $('#'+self.id+' .cabecalho-janelas').
                                     html('').
                                     append(
-                                        (self.voltar) ? $('<i/>',{class:'fa fa-arrow-left text-x-large mr-2 bg-primary position-absolute', 'style':"left:10px;", click:()=>{self.hide()}}) : ''
+                                        (self.btnBack) ? $('<i/>',{class:'fa fa-arrow-left text-x-large mr-2 bg-primary position-absolute', 'style':"left:10px;", click:()=>{self.hide()}}) : ''
                                     ).
-                                    append(self.titulo)
+                                    append(self.title)
                                     ;
                                 }
                             },
@@ -59,20 +57,44 @@ export default function janelas(){
                                     $('#'+self.id).append($('<div/>',{class:'painel', 'style':'min-height:100%; min-width:100%;'}).append(val));
                                 }
                             },
-        limparPainel    : ()=>{
+        clearPanel    : ()=>{
                                 $('#'+self.id+' > .painel').html("");
                             },
-        barraDeFerramentasHide   :()=>{
+        toolBArHide   :()=>{
                             $(".janelas#"+self.id+" > .cabecalho-janelas").hide()
         },
-        hide          : function(){
-                            $('#'+self.id).hide('slow');
+        /**
+         * Com esta função você pode navegar na dom de sua janela e ainda 
+         * aproveitar todos os recursos oferecidos pelo jquery
+         * 
+         * @param pamram - identificador css do elemento dentro da dom de sua janela
+         * ex. dentro da sua janela tem um <button class="btn1">btn 1</button>
+         * voce poderá seleciona-lo como se fosse com jquery. poderá fazer assim 
+         * $minha_janela.dom(".btn1").click((){
+         *  //instrução a ser executada
+         * })
+         */
+        DOM            :(param='')=>{
+            console.log(param);
+            return $("#"+self.id+" > .painel > "+param);
         },
-        show : function(val){
+        /**
+         * Função responsavel por minimisar a janela do aplicativo
+         * se a janela estiver espandida esta minimizara imediatamente
+         * @param param iguais a do jquery ex. slow que deixa mais suave o fechamento
+         */
+        hide          : function(param=''){
+                            $('#'+self.id).hide(param);
+        },
+        /**
+         * Função responsavel por exibir a janela do app
+         * @param param iguais a do jquery ex. slow que deixa a abertura um pouco mais suave
+         */
+        show : function(param=''){
             if(!$('#'+self.id).length){//caso seja a primeira vez chame o construct
-                self.construir();
+                self.construct();
             }
-            $('#'+self.id).show('slow'); 
+            $('#'+self.id).show(param); 
     
         },
         /** 
@@ -82,30 +104,34 @@ export default function janelas(){
          * caso vazio o cabecalho ficará vazio tambem.
          * @returns janela
         */
-        editeHead       :(paramHTML='')=>{
+        setHead       :(paramHTML='')=>{
             $(".cabecalho-janelas").html("").html(paramHTML);
             return self;
         },
-        editeTitulo     :(paramTitulo)=>{
+        setTitle     :(paramTitulo)=>{
             $("#"+self.id+" > .cabecalho-janelas > .titulo-janelas").html(paramTitulo);
         },
-        editeHeight     :(paramAltura)=>{
+        setHeight     :(paramAltura)=>{
             $('#'+self.id).
             css({
                 height:paramAltura
             });
         },
-        editeWidth      :(paramLargura)=>{
+        setWidth      :(paramLargura)=>{
             $('#'+self.id).
             css({
                 width:paramLargura
             });
+        },
+        setBgPanel    :()=>{
+            $("#"+self.id+" > .painel").css()
         }
     }
     //garante que ao inicializar as tags html ja seja adicionadas ao corpo do documanto.
-    self.construir();
+    self.construct();
     // garante que a tela inicialise minimizada
-    self.hide();
+    $("#"+self.id).hide();
     // retorna o obejeto
     return (self);
 }
+

@@ -39,11 +39,7 @@ $(".addCarrinhoConfirmar").click(function(){carrinho.confirmar(this)});
  * ]
  */ 
 
-function fnOrdenarTamanhoPorValor(ObjTamanho){
-    return ObjTamanho.sort(function(a,b){ 
-    return(a[Object.keys(a)]["valor"] - b[Object.keys(b)]["valor"]);//compara valor a com valor b
-    })
-}
+
 
 export default function carregarCurtidos(produtos){
     console.log(produtos);
@@ -51,21 +47,21 @@ export default function carregarCurtidos(produtos){
 
     for(var [key, value] of Object.entries(produtos)){//correndo o Json retorno 
         if(produtos.length>0){
-            produto.todos[value.codigo] = value;
+            produto.todos[value.id] = value;
             /**construindo o html */
             let random = Math.floor(Math.random() * 65536);
             let html = 
                 $("<div/>",{
                     "class":"cat-produto col-12  mr-auto ml-auto col-md-2 mb-4 pt-3 z-index-2",
-                    "id":value.codigo,
+                    "id":value.id,
                 }).
                 append(
                     $("<figure/>",{
                         "class":"cat-img-block text-center",
-                        id:"img_block"+value.codigo+"_"+random,
+                        id:"img_block"+value.id+"_"+random,
                     })
                     .append(
-                            //pego apenas a primeira string do value.codigo
+                            //pego apenas a primeira string do value.id
                             $("<legend/>",{
                                 "class":"cat-legend text-light col-12 bg-primary"
                             }).
@@ -87,7 +83,7 @@ export default function carregarCurtidos(produtos){
                             append(
                                 $("<i/>",{
                                     "class":"fa fa-heart cat-curtir text-x-large z-index-6 text-primary m-auto",
-                                    "data-id":value.codigo,
+                                    "data-id":value.id,
                                     "data-favoritado":value.favoritado,
                                     click:function(){curtirProduto($(this));}
                                 }),
@@ -105,7 +101,7 @@ export default function carregarCurtidos(produtos){
                                 "data-descricao":value.descricao,
                                 "data-categoria":value.categoria,
                                 "data-tamanho-valor":JSON.stringify(value.tamanho),
-                                "data-id":value.codigo,
+                                "data-id":value.id,
                                 "data-custo-envio":value.valor_frete,
                                 //"data-estoque":value.estoque,
                                 "data-img":value.img,
@@ -142,7 +138,7 @@ export default function carregarCurtidos(produtos){
                             "data-descricao":value.descricao,
                             "data-categoria":value.categoria,
                             "data-tamanho-valor":JSON.stringify(value.tamanho),
-                            "data-id":value.codigo,
+                            "data-id":value.id,
                             "data-custo-envio":value.valor_frete,
                             //"data-estoque":value.estoque,
                             "data-img":value.img,
@@ -199,7 +195,7 @@ export default function carregarCurtidos(produtos){
                 );
 
             tela.append(html);
-            loadImg(value.img[0],"#img_block"+value.codigo+"_"+random,"prepend");
+            loadImg(value.img[0],"#img_block"+value.id+"_"+random,"prepend");
             
         }
     }

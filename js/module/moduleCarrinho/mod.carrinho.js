@@ -342,9 +342,10 @@ var carrinho = {
             cor: $(self).attr("data-prod-cor"),
             quantidade: $(self).attr("data-quantidade")
         }  
+        console.log(produto.cor);
         var raw = JSON.stringify({ 
             user:JSON.parse(localStorage.getItem("login")),
-            "products":{"id":produto.id,"quantity":produto.quantidade,"size":produto.tamanho, "color    ":produto.cor }
+            "products":{"id":produto.id,"quantity":produto.quantidade,"size":produto.tamanho, "color":produto.cor }
         });
 
         let requestOptions = {
@@ -357,7 +358,22 @@ var carrinho = {
         let urlServer  = $conf.baseServerUrl()+"/api/cart/add";
 
         fetch(urlServer , requestOptions).
-        then(response=>response.json()).
+        then(response=>{
+            return new Promise((resolve, reject)=>{
+                var res = response.text();
+                res.then(rs=>{
+                    try {//se vir do servidor algo que não seja json é tratado com o bloco do tryCatch
+                        resolve( JSON.parse(rs) )
+                    } catch (error) {
+                        console.error("Erro ao passar para json", rs, error);
+                        reject("Houve um erro no servidor ");
+                    }//fim de catch
+
+                } ) ;
+                localStorage.setItem("teste", res);
+                
+            })
+        }).
         then((d)=>{
             //console.log(d);
             if(d.status=='error'){//if return erro on server
@@ -368,8 +384,13 @@ var carrinho = {
                 $(".cat-carrinho[data-id="+produto.id+"]").removeClass("text-primary").addClass("text-success");
             }
         }).catch((d)=>{
-            console.log(d);
-            alertar(produto.nome+" não adicionado! Erro de conexão!");
+            if(d == "TypeError: Failed to fetch"){
+                alertar (produto.nome+" não adicionado! Erro de conexão");
+                return d 
+            }
+            console.error(d);
+
+            alertar(produto.nome+" não adicionado! " + d);
         })
         
         $('#addCarrinho').modal('hide');

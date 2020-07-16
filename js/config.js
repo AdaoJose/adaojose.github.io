@@ -1,7 +1,7 @@
 
 function config(){
     function baseUrl(){
-        return ("http://localhost/saory-web/dinibir");
+        return ("https://adaojose.github.io");
     }
     function baseServerUrl(){
         return ("https://www.localhost/saory-api");

@@ -151,7 +151,8 @@ function cadastrar(nome, email, senha){
         method: 'POST',
         headers: myHeaders,
         body: raw,
-        redirect: 'follow'
+        mode:'cors',
+        
     };
 
     console.log("[Cadastro de usuario] init fetch...");
@@ -200,8 +201,27 @@ function cadastrar(nome, email, senha){
         return false;
     });
 }
+
+/**
+ * logado();
+ * @returns true para logado e false para não logado
+ */
+function logado(){
+    return new Promise( (resolve,reject)=>{
+        if(localStorage.getItem("login") && localStorage.getItem("login")!="")
+        {
+            resolve();
+        }
+        else
+        {
+            reject();
+        }
+    } );
+    
+}
+
 function usuario(){
-    return {login, cadastrar}
+    return {login, cadastrar, logado}
 }
 
 // exporto as funções de usuario como modulos

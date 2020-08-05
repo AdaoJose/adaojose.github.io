@@ -75,7 +75,7 @@
             usuario().login(email, senha).then(e=>{
                 if(e){
                     //login sucesso
-                    abrirUrl ($conf.indexPage());
+                    window.location.href = ($conf.indexPage());
                 }else{
                     //login falhou
                 }

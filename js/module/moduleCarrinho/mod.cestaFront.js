@@ -32,7 +32,7 @@ export default function cesta(){
                             location.
                             href = 
                                 config().
-                                baseUrl()+"/endereco.html"
+                                baseUrl()+"./endereco.html"
                             ;
 
                             });
@@ -173,7 +173,7 @@ export default function cesta(){
                 return totalCompra;
                 
             }).
-            then(totalCompra=>{$(".expo-total-compra").text(totalCompra)}).
+            then(totalCompra=>{$(".expo-total-compra").text(totalCompra.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }))}).
             catch(e=>{
                 console.log(e);
                 

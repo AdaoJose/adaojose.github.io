@@ -31,13 +31,23 @@ const $conf = config();
             };
         let url = $conf.baseServerUrl()+"/api/produto";
         fetch(url, requestOptions).
-        then(response=>{
-            console.log("[getProdServer] resolvido finalizado...", response);
-            resolve(response)
+        then(response=>response.text()).
+        then(text=>{
+            
+            var $resposta = text;
+            
+            try {
+                //passa a resposta para json
+                $resposta = JSON.parse( $resposta );
+                resolve($resposta);
+
+            } catch (error) {
+                reject( ["[getProdServer] Erro ao passar objeto para o formato json...", $resposta] );
+            }
+            
         })
         .catch(err=>{
-            console.log("[getProdServer] não resolvido finalizado...", err);
-            reject(err);
+            reject("[getProdServer] não resolvido finalizado...", err);
         });
 
     });
@@ -61,7 +71,6 @@ export default function carregarProdutos(pagination){
     console.log("[carregarProdutos] inicializando...");
     return new Promise((resolve, reject)=>{
         getProdServer(pagination).
-        then(response=>response.json()).
         then(response=>{
             var produtos = response;
             console.log(produtos);

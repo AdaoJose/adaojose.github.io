@@ -77,7 +77,7 @@ export default function carregarCurtidos(produtos){
     for(var [key, value] of Object.entries(produtos)){//correndo o Json retorno 
         cosole.log(value);
         if(produtos.length>0){
-            produto.todos[value.codigo] = value;
+            produto.todos[value.id] = value;
             /**construindo o html */
             let random = Math.floor(Math.random() * 65536);
             let html = 

@@ -11,7 +11,7 @@ var carrinho = {
      */
     remove:function(id){
         return new Promise((resolve, reject)=>{
-            console.log("[carrinho.remove] inicializando...");
+            
             let $conf  = config();
 
             let myHeaders = new Headers();
@@ -32,15 +32,14 @@ var carrinho = {
             fetch(uri, requestOptions)
             .then(response => response.json())
             .then(result =>{
-                // console.log(result);
+            
 
                 $("#"+id).
                 removeClass("destaque");//remove destaque do produto removido
-                console.log("[carrinho.remove] finalizado...");
+                
                 resolve("Este item foi removido");
             })
             .catch(error => {
-                console.log("[carrinho.remove] finalizado...");
                 if(!navigator.onLine){
                     reject("Falha! Você não tem uma conexão.");
                 }else{
@@ -60,7 +59,6 @@ var carrinho = {
      * @param _HTMLprodTag pode ser $(this) ou this ou até $('.btn_add_to_cart')
     */
     add:_HTMLprodTag=>{
-        // console.log($(_HTMLprodTag).attr('data-id'));
         // caso aindo não tenha estrutura adiciono a padrão
 
         function carregarTemplate(){
@@ -80,6 +78,7 @@ var carrinho = {
         }
         var botaoConfirmar = $(".addCarrinhoConfirmar");//botão clicado ao finalizar a compra
         var paramHtml = $(_HTMLprodTag);
+        var idProduto = paramHtml.attr("data-id");
         
         carregarTemplate().
         then(()=>{
@@ -118,13 +117,27 @@ var carrinho = {
     
     
             let $divProduto = $("<div/>",{"class":"row"});
-            let $divImg = $("<div>",{"class":"col-12 text-center"});
-            let $img = $("<img/>",{
-                "src":()=>{
-                    return(paramHtml.attr("data-img").split(',')[0]);
-                },
-                "class":"img-fluid addCarrinhoImg"
-               });
+            let $divImg = $("<div>",{"class":"col-12 text-center div-img-slide"});
+            
+            
+            let $divSlideGroupItem  = $("<div/>" , {class : "carousel-inner"}); //os itens serão adicionados de forma dinamica após o fetch do produto
+            let controleSlideAnterior = $("<a/>", {class:"carousel-control-prev", href:"#carouselExampleFade", role:"button", "data-slide":"prev"})
+            .append(
+                $("<span/>", {class:"carousel-control-prev-icon", "aria-hidden":"true"}),
+                $("<span/>", {class:"sr-only"}).append("Anterior")
+            );
+            let controleSlideProximo = $("<a/>", {class:"carousel-control-next", href:"#carouselExampleFade", role:"button", "data-slide":"next"})
+            .append(
+                $("<span/>", {class:"carousel-control-next-icon", "aria-hidden":"true"}),
+                $("<span/>", {class:"sr-only"}).append("Próximo")
+            );
+            
+            // let $img = $divSlide; //$("<img/>",{
+            //     "src":()=>{
+            //         return(paramHtml.attr("data-img").split(',')[0]);
+            //     },
+            //     "class":"img-fluid addCarrinhoImg"
+            //    });
             
             let $divInfoProduto = $("<div/>",{"class":"col-12 addCarrinhoNome border lead text-primary"});
             let $divDescricao = $("<div/>",{"class":"col-12  addCarrinhoDescricao mb-3"}).append(paramHtml.attr("data-descricao"));
@@ -158,7 +171,6 @@ var carrinho = {
             .append(()=>{
                 let option = "";
                 let obj = JSON.parse( paramHtml.attr("data-tamanho-valor"));
-                console.log(obj);
                 for (var [key, value] of Object.entries(obj)) {
 
                    let vp = 
@@ -172,8 +184,7 @@ var carrinho = {
                        "<option data-cor="+
                        cor_quantidade+
                        " value="+key+"> "+key+" "+vp.toLocaleString('pt-BR',{ style: 'currency', currency: 'BRL' })+"</option>";
-                    console.log(key);
-                    console.log(value);
+                    
                     
                 }
                // for (var property in Object.values(obj)){
@@ -207,7 +218,7 @@ var carrinho = {
                let obj = JSON.parse( paramHtml.attr("data-tamanho-valor"));
 
                //como o primeiro item a ser pego é o da posição zero pego a cor da mesma posição
-               console.log(obj);
+               
                
                let objPrimeiraPosicao = obj[Object.keys(obj)[0]];
                
@@ -275,43 +286,105 @@ var carrinho = {
             ); 
     
     
-            let htmlExpoProd
-            =
-             $divProduto.append(
-                 $divImg
-                     .append(
-                        $img
-                     )
-                ,$divInfoProduto
-                 .append(
-                          //paramHtml.attr("data-nome"),
-                          //$("<small>",{"class":"text-small float-right"}).append(paramHtml.attr("data-estoque") + " disponiveis"),
-                          $divDescricao,
-                          $divAvaliacao
-                 )
-                ,$("<tr>")
-                 ,$divTamanho
-                ,$divCor
-                ,$divQuantia
-                ,$("<tr/>",{"class":"mt-5"})
-                ,$("<div/>",{"class":"col-12 border lead"})
-                 .append("Valor de envio: R$"+paramHtml.attr("data-custo-envio"))
-                
-      
-      
-             );
+            
                
             $('#addCarrinho').modal('show');
             $(".addCarrinhoBody").html("");
             $(".addCarrinhoBody").html(carregando);
-            setTimeout(()=>{
+            
+            //começo a requisição de produto no servidor
+            let $conf = config();
+            let myHeaders = new Headers();
+            myHeaders.append("AppKey", $conf.appKey());
+            myHeaders.append("AppId", $conf.appId());
+            myHeaders.append("Content-Type", "application/json");
+
+            let raw = JSON.stringify({"user":JSON.parse(localStorage.getItem("login"))});
+
+            let requestOptions = {
+            method: 'POST',
+            headers: myHeaders,
+            body: raw,
+            redirect: 'follow'
+            };
+            let uri = $conf.baseServerUrl()+"/api/getproduto/"+idProduto;
+            
+
+            fetch(uri, requestOptions)
+            .then(response => response.text())
+            .then(response=>{//camada extra adicionada para validar e tratar erro caso servidor não retorne json
+                return new Promise((resolve, reject)=>{
+                    try {
+                        let $json = JSON.parse(response);
+                        resolve($json);
+                    } catch (error) {
+                        reject("Erro ao executar tarefa cod. 500");
+                    }
+                });
+            })
+            .then(produtoServerJson =>{
+                
+                //aqui é construido o produto juntando
+                produtoServerJson.img.forEach((img, index)=>{
+                   
+                    let $divSlideItem;//recebe a imagem a ser adicionada no slide
+                    if (index == 0){// a primeira imagem será a ativa
+                        $divSlideItem = $("<div/>", {class:"carousel-item active"}).
+                        append(
+                            $("<img/>", {class:"img-fluid img-slide-produto-expand", src:img})
+                        );
+                    }else{
+                        $divSlideItem = $("<div/>", {class:"carousel-item"}).
+                        append(
+                            $("<img/>", {class:" img-fluid img-slide-produto-expand", src:img})
+                        );
+                    }
+                    $divSlideGroupItem.append($divSlideItem);
+                });
+                let $divSlide  = $("<div/>", {id:"carouselExampleFade", class:"carousel slide carousel-fade", 'data-ride':"carousel"}).
+                append( 
+                    $divSlideGroupItem,
+                    controleSlideAnterior,
+                    controleSlideProximo
+                );
+                let htmlExpoProd
+                =
+                $divProduto.append(
+                    $divImg
+                        .append(
+                            $divSlide
+                        )
+                    ,$divInfoProduto
+                    .append(
+                            //paramHtml.attr("data-nome"),
+                            //$("<small>",{"class":"text-small float-right"}).append(paramHtml.attr("data-estoque") + " disponiveis"),
+                            $divDescricao,
+                            $divAvaliacao
+                    )
+                    ,$("<tr>")
+                    ,$divTamanho
+                    ,$divCor
+                    ,$divQuantia
+                    ,$("<tr/>",{"class":"mt-5"})
+                    ,$("<div/>",{"class":"col-12 border lead"})
+                    .append("Valor de envio: R$"+paramHtml.attr("data-custo-envio"))
+                    
+        
+        
+                );
+
                 $(".addCarrinhoBody").html("").html(htmlExpoProd);
-            },2000);
+            })
+            .catch(error => {
+                console.error(error);
+            });
+            //termino a requisição de produto no servidor
+
+            
             botaoConfirmar.
             off("click").
             click(
                 function(){
-                    console.log("[.addCarrinhoConfirmar] clicado, ", "chamando carrinho.confirmar(this)");
                     carrinho.confirmar(botaoConfirmar);
                 }
             );
@@ -368,7 +441,6 @@ var carrinho = {
             atualizarValores();//rodo uma vez
         })//fim de then
         .catch((val)=>{
-            console.log(val);
             alertar("Erro ao carregar Template");
         })
     },
@@ -398,7 +470,6 @@ var carrinho = {
             cor: $(self).attr("data-prod-cor"),
             quantidade: $(self).attr("data-quantidade")
         }  
-        console.log(produto.cor);
         var raw = JSON.stringify({ 
             user:JSON.parse(localStorage.getItem("login")),
             "products":{"id":produto.id,"quantity":produto.quantidade,"size":produto.tamanho, "color":produto.cor }
@@ -431,10 +502,9 @@ var carrinho = {
             })
         }).
         then((d)=>{
-            //console.log(d);
             if(d.status=='error'){//if return erro on server
                 alertar("Erro ao adicionar a lista de compras. Estamos trabalhando para resolver!");
-                console.log(d);
+                console.error(d);
             }else{
                 alertar(produto.nome+" adicionado a lista de compras!");
                 $(".cat-carrinho[data-id="+produto.id+"]").removeClass("text-primary").addClass("text-success");
@@ -481,7 +551,6 @@ var carrinho = {
             return fetch(urlServer , requestOptions).
                     then(response => response.json()).
                     then(e=>{
-                        //console.log(e);
                         //Servidor retornou erro
                         if(e.status=="error"){
                             console.error("[carrinho.listaDeCompras] Error..." , e);
@@ -489,7 +558,6 @@ var carrinho = {
                         }
                         //cesta conseguiu pegar produtos
                         else{
-                            console.log("[carrinho.listaDeCompras] produtoscarregados", e);
                             resolve(e);
                         }
                             

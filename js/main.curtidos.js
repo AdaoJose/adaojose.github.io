@@ -14,26 +14,9 @@
 
 
         
-
-
-        
-        
-
-        
-        
-
-        console.log("[Main curtidos] start");
-
-        
-        
-        
-        
-        
-        
         $(".expo-ico-carrinho-show").
         click(()=>{
-        console.log("[.expo-ico-carrinho-show] clicado...", "Chamando [cesta.show]....");
-        cesta().show();//cesta de compras itera com o visual abrir, fechar ... para mostrar produtos ao usuario
+            cesta().show();//cesta de compras itera com o visual abrir, fechar ... para mostrar produtos ao usuario
         });
 
         
@@ -61,7 +44,7 @@
                 class:" col-12 btn btn-outline-primary btn-load-more-prod",
                 click:()=>carregarProd(pagination+1)
             }).append("Ver mais");
-            console.log($btnCarregarProduto);
+            
             home_janela.append($btnCarregarProduto);
             //response == array com os htmls dos produtos
             //foreach percorre array e adiciona em home_janela
@@ -70,16 +53,14 @@
                 $($loader).
                 remove();
                 $("#"+home_janela.id+" > .painel").removeClass("centralizar-filhos-VeO");
-                console.log(home_janela.DOM("#1").click(()=>{
                 
-                }));
             }).
             catch(error=>{
             setTimeout((error)=>{
                 home_janela.clearPanel();
                 home_janela.append("Falha ao carregar pagina");
-                console.log("[erro]");
-                //console.log(error);
+                console.error("[erro]");
+                
             },2000);
             console.error(error);
             });

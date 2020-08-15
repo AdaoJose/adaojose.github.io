@@ -1,0 +1,14 @@
+.radio-meio-pagamento{
+    padding: 40px;
+    background-color: #FAFAFA;
+    font-size: 1.2em;
+    font-weight: 400;
+    color: #999;
+    line-height: 1.25;
+    font-family: Proxima Nova,-apple-system,Helvetica Neue,Helvetica,Roboto,Arial,sans-serif;
+
+}
+.janelas{
+    overflow-y: auto;
+    overflow-x: hidden;
+}

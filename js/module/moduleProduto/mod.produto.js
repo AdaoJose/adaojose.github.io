@@ -10,7 +10,7 @@ const $conf = config();
  * @returns JSON de produtos
 */
  async function getProdServer(numPag){
-    console.log("[getProdServer] inicializando...");//log de inicialização
+   
     return new Promise((resolve, reject)=>{
         let myHeaders = new Headers();
         myHeaders.append("AppKey", $conf.appKey());
@@ -68,12 +68,11 @@ const $conf = config();
  */
 
 export default function carregarProdutos(pagination){
-    console.log("[carregarProdutos] inicializando...");
+  
     return new Promise((resolve, reject)=>{
         getProdServer(pagination).
         then(response=>{
             var produtos = response;
-            console.log(produtos);
             var ret = [];//retorno
             for(var [key, value] of Object.entries(produtos)){//correndo o Json retorno 
                 if(produtos.length>0){
@@ -93,7 +92,6 @@ export default function carregarProdutos(pagination){
         catch(e=>reject(e));//fim de getProdServer.then()
 
     });
-    
-    console.log("[carregarProdutos] finalizado...");
+
 }
 

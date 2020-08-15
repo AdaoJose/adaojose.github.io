@@ -4,13 +4,13 @@ import alertar from "../alertar/mod.alertar.js";
 var $conf = config();
 
 export default function cesta(){
-    console.log("[cesta] inicializando...");
+    
     function hide(){
         $(".expo-lista-compra").hide("slow");
         return(this);
     }
     function show(){
-        console.log("[cesta().show()] inicializando ...");
+        
         /**
          * carregarTemplateCesta()
          * Function responsavel por verificar se na pagina já foi carregado a estrutura da cesta de compras
@@ -54,7 +54,7 @@ export default function cesta(){
                 $cesta.
                 show("slow");
                 sinc();
-                console.log("[cesta().show()] finalizando ...");
+                
         
         })
         
@@ -65,7 +65,7 @@ export default function cesta(){
         $(".expo-body-lista-compra").html("");
     }
     function sinc(){// apenas adiciona produtos vindos do servidor para sincronia com o servidor sem enviar para o servidor
-        //console.log(produto.todos[id]);
+        
             let $loading =$("<div/>", {class:"spinner-grow text-primary text-center m-auto ", role:'status', style:"width:65px;hight:65px;"})
                 .append($("<span/>",{class:"sr-only"}).append("Carregando..."))
             ;
@@ -82,21 +82,32 @@ export default function cesta(){
             btnReload .remove();
             $(".expo-body-lista-compra").append($loading);
             carrinho.listaDeCompras().then(e=>{
-                //console.log(e)
-                var totalCompra = 0.0;
-                if((Object.keys(e).length)>0){
-                    $.each(e, function(key, val){
+                
+                
+                if((e.cart.length)>0){
+                    
+                    $('.btn-f-compra').attr("disabled",false);
+                    $.each(e.cart, function(key, val){
                         // cesta.sinc(val.productId,val.quantity,val.quantity, val.value);
                         let id = val.productId;
                         let nome  = val.name;
                         let quantidade = val.quantity;
                         let tamanho = val.size;
-                        let valor = val.value;
-                        
+                        let valor = parseFloat(val.value)+parseFloat(val.freight);
+                        let $srcImg;
+                        try {
+                            $srcImg = JSON.parse(val.img)[0];
+                            if($srcImg==""){
+                                $srcImg = $conf.noImage();
+                            }
+                        } catch (error) {
+                            $srcImg = $conf.noImage();
+                            console.error("erro ao converter imagem para json");
+                        } 
                         let $row  = $("<tr/>",{"id":"item-"+id});
                         let $img = $("<img/>",
                             {
-                                //"src":((produto.todos[id].img[0]!="")?produto.todos[id].img[0]:'8'),
+                                "src":$srcImg,
                                 "class":"img-fluid expo-img-aux"
                             }
                         );
@@ -133,17 +144,17 @@ export default function cesta(){
                                         remove( $(this).attr("id") ).
                                         then(e=>{
                                             alertar(e);
-                                            console.log(e);
+                                            
                                             sinc();
                                         }).catch(e=>{
                                             alertar(e);
-                                            console.log(e);
+                                            console.error(e);
                                         })
                                     }
                             }).
                             append("X")
-                        totalCompra+=valor*quantidade;
-                        //TotalCompra(id,(valor*quantidade));
+                        
+                        
                         $("#"+id).addClass("destaque");//marca produto adicionado
                         let html = $row.
                         append( 
@@ -159,9 +170,8 @@ export default function cesta(){
                             
                 }
                 //cesta vazia
-                else if((Object.keys(e).length)<1){
-                    console.log("Cesta vazia");
-
+                else{
+                    $('.btn-f-compra').attr("disabled",true);//se a cesta estver vasia desabilita o botão de continuar compra
                     let cestaVazia = 
                     $("<div/>",{class:"lead mt-5 text-center", style:"width:160%"}).
                     append("Sua cesta de compra ainda esta vazia :(");
@@ -170,12 +180,12 @@ export default function cesta(){
                     append(cestaVazia);
                     $loading.remove();//remove carregamento depois de adicionar produtos
                 }
-                return totalCompra;
+                return e.total;
                 
             }).
             then(totalCompra=>{$(".expo-total-compra").text(totalCompra.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }))}).
             catch(e=>{
-                console.log(e);
+                console.error(e);
                 
                 $(".expo-body-lista-compra").append(btnReload);
                 $(".loading-cesta").remove();//remove carregamento depois de adicionar produtos
@@ -183,7 +193,7 @@ export default function cesta(){
             
             
     }
-    console.log("[cesta] finalizado...");
+
     return {
         hide,
         show,

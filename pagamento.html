@@ -6,228 +6,242 @@
     <title>Pagamento</title>
     <script src="./js/jquery.js"></script>
     <link rel="stylesheet" href="./css/bootstrap-4.3.1-dist/css/bootstrap.css">
+    <link rel="stylesheet" href="css/pagamento.css">
     <script src="./css/bootstrap-4.3.1-dist/js/bootstrap.min.js"></script>
 </head>
 <body>
-    <script type="module">
-        import $jan from "./js/module/moduleJanelas/mod.janelas.js";
-        import config from "./js/config.js";
-        import modal from "./js/module/moduleBootstrapModal/modal.js";
-        import alertar from "./js/module/alertar/mod.alertar.js";
-        import carregamento from "./js/module/carregamento/mod.carregamento.js";
-        import carrinho from "./js/module/moduleCarrinho/mod.carrinho.js";
+<script type="module">
+    import $jan from "./js/module/moduleJanelas/mod.janelas.js";
+    import config from "./js/config.js";
+    import modal from "./js/module/moduleBootstrapModal/modal.js";
+    import alertar from "./js/module/alertar/mod.alertar.js";
+    import carregamento from "./js/module/carregamento/mod.carregamento.js";
+    import carrinho from "./js/module/moduleCarrinho/mod.carrinho.js";
+    import request from "./js/module/requestFetchForApp/request.js"
 
-        var $listaCompra = carrinho.listaDeCompras();
+    var $listaCompra = carrinho.listaDeCompras();
 
-        const $janela_pagamento = $jan();
-        const $conf = config();
+    const $janela_pagamento = $jan();
+    const $conf = config();
 
-        $janela_pagamento.show();
+    $janela_pagamento.show();
 
-        $janela_pagamento.setTitle("Pagamento");
+    $janela_pagamento.setTitle("Pagamento");
 
 
-        var $form =
-        $("<form/>");
+    var $form =
+    $("<form/>");
 
-        var $divBandeira = 
-        $("<div>",{
-            class:"form-group"
+    var $divBandeira = 
+    $("<div>",{
+        class:"form-group"
+    });
+
+    var $selectBandeira = 
+    $("<select/>",{
+        class:"custom-select"
+    }).append(function(){
+
+        let rawCardsAccepted = 
+        JSON.
+        stringify({
+            user:JSON.parse(localStorage.getItem("login")),
+            controler:"cardsAccepted"//Retorna os cartões aceitos
         });
 
-        var $selectBandeira = 
-        $("<select/>",{
-            class:"custom-select"
-        }).append(function(){
-            let $myHeader  = new Headers();
-            $myHeader.append("appKey", $conf.appKey());
-            $myHeader.append("appId", $conf.appId());
-            $myHeader.append("content-type", "application/json");
-
-            let raw = 
-            JSON.
-            stringify({
-                user:JSON.parse(localStorage.getItem("login")),
-                controler:"cardsAccepted"//Retorna os cartões aceitos
-            });
-
-            let requestOptions =
-            {
-                method: 'POST',
-                headers: $myHeader,
-                body: raw,
-                redirect: 'follow'
-            };
-            
-            let url = 
-            $conf.baseServerUrl()+"/api/card";
-
-            var jsonPagCode = {
-                "4":"Operação realizada com sucesso",
-                "6":"Operação realizada com sucesso",
-                "05":"Não Autorizada",
-                "57":"Cartão Expirado",
-                "78":"Cartão Bloqueado",
-                "99":"Tempo esgotado",
-                "77":"Cartão Cancelado",
-                "70":"Problemas com o Cartão de Crédito"
-            };
-
-            fetch(url, requestOptions).
-            then(response=>response.json()).
-            then(a=>{
-                if(a.status=="success"){
-                    a.cardsAccepted.forEach(element => {
-                        $($selectBandeira).append($("<option/>",{
-                            value:element
-                        }).append(element));
-                    });
-                }else{
-                    alert("Houve um erro ao carregar as opções de pagamento. Sua pagina será recarregada.");
-                    window.location.reload();
-                }
-            })
-        })
-
-        var $divNome = 
-        $("<div/>",{
-            class:"form-group"
-        });
-
-        var $inputNome = 
-        $("<input/>",{
-            class:"form-control",
-            placeholder:"Nome como está no cartão",
-            type:"text"
-        });
-
-        var $divNumero = 
-        $("<div/>",{
-            class:"form-group"
-        });
-
-        var $inputNumero = 
-        $('<input/>',{
-            class:"form-control",
-            placeholder:"Numero",
-            type:"text"
-        });
-
-        var $divData = 
-        $("<div/>",{
-            class:"form-group row p-3"
-        });
-
-        var $inputMes = 
-        $("<input/>",{
-            class:"form-control col",
-            placeholder:"Mês",
-            type:"text"
-        });
-
-        var $inputAno = 
-        $("<input/>",{
-            class:"form-control col",
-            placeholder:"Ano",
-            type:"text"
-        });
-
-        var $divVerificador = 
-        $("<div/>",{
-            class:"form-group"
-        });
-
-        var $inputVerificador = 
-        $("<input/>",{
-            class:"form-control",
-            placeholder:"Codigo verificador"
-        });
-
-        var $divCheq = 
-        $("<div/>",{
-            class:"form-check"
-        });
-
-        var $inputCheq = 
-        $("<input/>",{
-            class:"form-check-input",
-            id:"inputCheq",
-            type:"checkbox"
-        });
-
-        var $labelInputCheq = 
-        $("<label>",{
-            for:"inputCheq",
-            class:"form-check-label"
-        }).
-        append("Salvar");
-
-        //construção do formulario 
-
-        $form.
-        append(
-            $divBandeira.
-            append($selectBandeira),
-
-            $divNome.
-            append(
-                $inputNome
-            ),
-
-            $divNumero.
-            append(
-                $inputNumero
-            ),
-
-            $divData.
-            append(
-                $inputMes,
-                $inputAno
-            ),
-
-            $divVerificador.
-            append(
-                $inputVerificador
-            ),
-
-            $divCheq.
-            append(
-                $inputCheq,
-                $labelInputCheq
-            )
-        );
         
-        //function responsavel por lançar a request de pagamento
-        var $functionPagar = 
-        function(){
-            var $headers = new Headers();
-            $headers.append("content-type","application/json");
-            $headers.append("appId",$conf.appId());
-            $headers.append("appKey",$conf.appKey());
+        let url = 
+        $conf.baseServerUrl()+"/api/card";
 
-            console.log(totalPag);
-            
+        var jsonPagCode = {
+            "4":"Operação realizada com sucesso",
+            "6":"Operação realizada com sucesso",
+            "05":"Não Autorizada",
+            "57":"Cartão Expirado",
+            "78":"Cartão Bloqueado",
+            "99":"Tempo esgotado",
+            "77":"Cartão Cancelado",
+            "70":"Problemas com o Cartão de Crédito"
+        };
 
-            var $raw =
-            JSON.stringify({
-                user:JSON.parse(localStorage.getItem("login")),
-                controler:"pagar",
+        request(url, rawCardsAccepted).
+        then(response=>response.json()).
+        then(a=>{
+            if(a.status=="success"){
+                a.cardsAccepted.forEach(element => {
+                    $($selectBandeira).append($("<option/>",{
+                        value:element
+                    }).append(element));
+                });
+            }else{
+                alert("Houve um erro ao carregar as opções de pagamento. Sua pagina será recarregada.");
+                window.location.reload();
+            }
+        })
+    })
+
+    var $divNome = 
+    $("<div/>",{
+        class:"form-group"
+    });
+
+    var $inputNome = 
+    $("<input/>",{
+        class:"form-control",
+        placeholder:"Nome como está no cartão",
+        type:"text"
+    });
+
+    var $divNumero = 
+    $("<div/>",{
+        class:"form-group"
+    });
+
+    var $inputNumero = 
+    $('<input/>',{
+        class:"form-control",
+        placeholder:"Numero",
+        type:"text"
+    });
+
+    var $divData = 
+    $("<div/>",{
+        class:"form-group row p-3"
+    });
+
+    var $inputMes = 
+    $("<input/>",{
+        class:"form-control col",
+        placeholder:"Mês",
+        type:"text"
+    });
+
+    var $inputAno = 
+    $("<input/>",{
+        class:"form-control col",
+        placeholder:"Ano",
+        type:"text"
+    });
+
+    var $divVerificador = 
+    $("<div/>",{
+        class:"form-group"
+    });
+
+    var $inputVerificador = 
+    $("<input/>",{
+        class:"form-control",
+        placeholder:"Codigo verificador"
+    });
+
+    var $divCheq = 
+    $("<div/>",{
+        class:"form-check"
+    });
+
+    var $inputCheq = 
+    $("<input/>",{
+        class:"form-check-input",
+        id:"inputCheq",
+        type:"checkbox"
+    });
+
+    var $labelInputCheq = 
+    $("<label>",{
+        for:"inputCheq",
+        class:"form-check-label"
+    }).
+    append("Salvar");
+
+    //construção do formulario 
+
+    $form.
+    append(
+        $divBandeira.
+        append($selectBandeira),
+
+        $divNome.
+        append(
+            $inputNome
+        ),
+
+        $divNumero.
+        append(
+            $inputNumero
+        ),
+
+        $divData.
+        append(
+            $inputMes,
+            $inputAno
+        ),
+
+        $divVerificador.
+        append(
+            $inputVerificador
+        ),
+
+        $divCheq.
+        append(
+            $inputCheq,
+            $labelInputCheq
+        )
+    );
+    /**
+    *rawToken() retorna os valores nescessario para pagar utilizando o token do cartão de credito
+    *function usada por $function parar
+    *em caso de suscesso retorna o raw token
+    */
+    function $rawToken(){
+        return new Promise((resolve, reject)=>{
+            let $bodyToken =
+            {
+                "user":JSON.parse(localStorage.getItem("login")),
+                "controler":"pagar",
                 "card": {
-                    "cardNome":$($inputNome).val(),
-                    "valor":totalPag,
-                    "cardCodigo":$($inputVerificador).val(),
-                    "cardVencimeto":$($inputMes).val()+"/"+$($inputAno).val(),
-                    "cardNumero":$($inputNumero).val(),
-                    "card":$($selectBandeira).val()
+                    "card":"token",
+                    "token":$(".input-action:checked").attr("data-token")
                 }
-            });
-
-            var $optRequest = {
-                method:"POST",
-                body:$raw,
-                headers:$headers,
-                redirect:"follow"
             };
+            resolve($bodyToken);
+        })
+    }
+    /**
+    *$rawCard() retorna a raw utilizada para gerar transação com o cartão de credito
+    em caso de suscesso retornará o raw do cartão de credito em caso de falha retornará uma frase explicando o motivo
+    */
+    function $rawCard(){
+        return new Promise((resolve, reject)=>{
+            let $bodyCard =
+            {
+                "user":JSON.parse(localStorage.getItem("login")),
+                "controler":"pagar",
+                "card": {
+                    "cardNome":$($inputNome).val() ,
+                    "valor":totalPag,
+                    "cardCodigo": $($inputVerificador).val() ,
+                    "cardVencimeto": $($inputMes).val()+"/"+$($inputAno).val() ,
+                    "cardNumero": $($inputNumero).val() ,
+                    "card":$($selectBandeira).val(),
+                    "tokenizar":$($inputCheq).is(':checked')
+                }
+            };
+            resolve($bodyCard);
+        })
+    }
+    
+    //function responsavel por lançar a request de pagamento
+    function $functionPagar($param = false){
+        var $rawPagar;
+        if($param == "token"){//rawtonken
+            $rawPagar = $rawToken();
+        }else{
+            $rawPagar = $rawCard();
+        }
+        $rawPagar.
+        then(($body)=>{
+            console.log($body);
+
             let $url = 
             $conf.baseServerUrl()+"/api/card";
 
@@ -236,8 +250,19 @@
             loader.
             show();
 
-            fetch($url, $optRequest).
-            then(response=>response.json())
+            request($url, JSON.stringify($body)).
+            then(response=>response.text()).
+            then(response=>{
+                return new Promise((resolve, reject)=>{
+                    console.log(response);
+                    try {
+                        let json = JSON.parse(response);
+                        resolve(json);
+                    } catch (error) {
+                        reject (error);
+                    }
+                })
+            })
             .then(a=>{
                 // processar o json
                 if(a.status=="success"){
@@ -248,131 +273,216 @@
                 }
                 console.log(a);
             }).
-            catch(()=>{
+            catch(err=>{
                 // erro na camada de rede
-                alertar("Verifique sua conexão com a internet!")
+                console.log(err);
+                loader.hide();
+                if(!window.online){
+                    alertar("Ops... Não detectamos uma conexão. Verifique conexão com a internet e tente novamente!")
+                }else{
+                    alertar("Verifique sua conexão com a internet!")
+                }
+                
             });
-        };
-
-        var $modal = modal({
-            title:"Cartão de Credito",
-            body:$form,
-            functionBtnSuccess:{
-                click:$functionPagar
-            }
-        });
-
-        var $btnAddCartao = 
-        $("<button/>",{
-            class:"btn btn-outline-primary",
-            click:()=>{
-                $modal.show();
-            }
-        }).
-        append("Usar Cartão");
-
-        var $divCartao = 
-        $("<div/>",{
-            class:"container text-center"
-        });
-
-        $divCartao.
-        append($btnAddCartao);
-
-        //liasta de compras
-
-        var $divListaCompras = 
-        $("<div/>",{
-            class:"table-responsive"
-        });
-
-        var $tableLihstaCompra = 
-        $("<table/>",{
-            class:"table"
-        });
-
-        var $tbody = 
-        $("<tbody/>",{
-            class:""
-        });
-
-        var $thead = 
-        $("<thead/>",{
-            class:"thead-light"
-        });
-
-        var $tr = 
-        $("<tr/>");
+        }).catch(err=>{
+            alert(err);
+        })
         
-        var $trHead = $tr;
+    };
 
-        ["Produto", "Quantidade","Valor"].forEach((val)=>{
+    var $modal = modal({
+        title:"Cartão de Credito",
+        body:$form,
+        functionBtnSuccess:{
+            click:$functionPagar
+        }
+    });
+
+    var $btnAddCartao = 
+    $("<button/>",{
+        class:"btn btn-outline-primary",
+        click:()=>{
             
-            $trHead.append(
-                $("<th/>").append(val)
-            )
+            let $dataAtion = $(".input-action:checked").attr("data-action");
+            if($dataAtion == "novo"){
+                $modal.show();
+            }else if($dataAtion == "token"){
+                $functionPagar("token");
+            }
+            console.log($dataAtion);
+        }
+    }).
+    append("Usar Cartão");
 
-        });
+    var $divCartao = 
+    $("<div/>",{
+        class:"container text-center"
+    });
 
-        $thead.
-        append($trHead);
+    $divCartao.
+    append($btnAddCartao);
 
-        var totalPag = 0.00;
-
-        $divListaCompras.
-        append(
-            $listaCompra.then((produtos)=>{
-                if(produtos.length>0){
-
-                    produtos.
-                    forEach(
-                        (produto)=>{
-
-                            $tbody.append(
-                                $("<tr/>").
-                                append(
-                                    $("<td/>").append(produto.name),
-                                    $("<td/>").append(produto.quantity),
-                                    $("<td/>").append(parseFloat( produto.value ) )
-                                )
-                            );
-
-                            totalPag += parseFloat( 
-                                 produto.value * produto.quantity
-                                
-                                );
-                        }
-                    );//fim de each
-
-                    $tbody.append(
-                        $("<tr/>").append(
-                            $("<td/>",{
-                                colspan:2
-                            }).append("Total"),
-                            $("<td/>").append("R$ "+totalPag)
-                        )
-                    )
-                    
+    const $divListaCartaoes = $("<div/>");
+    const $divUnidadeCartao = $("<div/>");
+    
+    
+    let  rawGetTokenizados = JSON.stringify({
+        controler:'Tokenizados',
+            user:JSON.parse(localStorage.getItem("login"))
+    });
+    
+    let urlAlvo = $conf.baseServerUrl()+"/api/card";
+    request(urlAlvo, rawGetTokenizados)
+        .then(response => response.text())
+        .then(response=>{
+            return new Promise((resolve , reject)=>{
+                try {
+                    let json = JSON.parse(response);
+                    resolve(json);
+                } catch (error) {
+                    resolve([]);
+                    console.error("Erro ao converter para json");
                 }
             })
-        );
-
-        $divListaCompras.
-        append(
-            $tableLihstaCompra.
-            append(
-                $thead,
-                $tbody
-            )
-        );
-
+        })
+        .then(json => {
+            console.log(json)
+        json.map((val)=>{
+            console.log(val);
+            $divUnidadeCartao
+            .append(`
+            <div class="custom-control custom-radio custom-control-inline radio-meio-pagamento border col-12">
+                <input data-action="token" data-token=`+val.token+` type="radio" id="`+val.token+`" name="customRadioInline1" class="custom-control-input input-action">
+                <label class="custom-control-label" for="`+val.token+`">Usar cartão `+val.bandeira+` ****`+val.finalNum+`</label>
+            </div>
+            `);
+        })
+        
+        }).then(()=>{
+        $divUnidadeCartao
+            .append(`
+            <div class="custom-control custom-radio custom-control-inline radio-meio-pagamento border col-12">
+                <input data-action="novo" type="radio" id="customRadioInline2" name="customRadioInline1" class="custom-control-input input-action">
+                <label class="custom-control-label" for="customRadioInline2">Novo Cartão de crédito</label>
+            </div>
+            `);
+        })
+        .then(()=>{
         $janela_pagamento.
-        append($divListaCompras);
+        append($divUnidadeCartao);
 
         $janela_pagamento.
         append($divCartao);
+        })
+        .catch(error => {
+            console.log(error);
+            console.error("Parece que você esta com problemas de conexão :(");
+            $janela_pagamento.
+        append($divUnidadeCartao);
+        })
+    
 
+    
+
+    //liasta de compras
+
+    var $divListaCompras = 
+    $("<div/>",{
+        class:"table-responsive"
+    });
+
+    var $tableLihstaCompra = 
+    $("<table/>",{
+        class:"table"
+    });
+
+    var $tbody = 
+    $("<tbody/>",{
+        class:""
+    });
+
+    var $thead = 
+    $("<thead/>",{
+        class:"thead-light"
+    });
+
+    var $tr = 
+    $("<tr/>");
+    
+    var $trHead = $tr;
+
+    ["","Prod.", "Qtd.","Val / item"].forEach((val)=>{
         
-    </script>
+        $trHead.append(
+            $("<th/>").append(val)
+        )
+
+    });
+
+    $thead.
+    append($trHead);
+
+    var totalPag = 0.00;
+
+    $divListaCompras.
+    append(
+        $listaCompra.then((produtos)=>{
+            if(produtos.cart.length>0){
+
+                produtos.cart.
+                forEach(
+                    (produto)=>{
+                        let $img;
+                        try {
+                            $img = JSON.parse(produto.img)[0];
+                            if($img == ""){
+                                $img = $conf.noImage();
+                            } 
+                        } catch (error) {
+                            $img = $conf.noImage();
+                        }
+                        $tbody.append(
+                            $("<tr/>").
+                            append(
+                                $("<td/>").append($("<img/>",{src:$img, style:"width:15vw", class:""})),
+                                $("<td/>").append(produto.name),
+                                $("<td/>").append(produto.quantity),
+                                $("<td/>").append(parseFloat( parseFloat(produto.value)  ).toLocaleString('pt-br',{style: 'currency', currency: 'BRL'}) +"<br> frete: "+parseFloat(produto.freight).toLocaleString('pt-br',{style: 'currency', currency: 'BRL'}))
+                            )
+                        );
+
+                        
+                    }
+                );//fim de each
+
+                $tbody.append(
+                    $("<tr/>").append(
+                        $("<td/>",{
+                            colspan:2
+                        }).append("Total"),
+                        $("<td/>").append( produtos.total.toLocaleString('pt-br',{style: 'currency', currency: 'BRL'}) )
+                    )
+                )
+                
+            }
+        })
+    );
+
+    $divListaCompras.
+    append(
+        $tableLihstaCompra.
+        append(
+            $thead,
+            $tbody
+        )
+    );
+
+    $janela_pagamento.
+    append($divListaCompras);
+    
+    
+
+    
+</script>
 </body>
 </html>

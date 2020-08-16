@@ -10,7 +10,11 @@ const $conf = config();
  * @returns JSON de produtos
 */
  async function getProdServer(numPag){
+<<<<<<< HEAD
    
+=======
+    console.log("[getProdServer] inicializando...");//log de inicialização
+>>>>>>> cdac72819cd0eee892270f03a1be632413e875c4
     return new Promise((resolve, reject)=>{
         let myHeaders = new Headers();
         myHeaders.append("AppKey", $conf.appKey());
@@ -31,6 +35,7 @@ const $conf = config();
             };
         let url = $conf.baseServerUrl()+"/api/produto";
         fetch(url, requestOptions).
+<<<<<<< HEAD
         then(response=>response.text()).
         then(text=>{
             
@@ -48,6 +53,15 @@ const $conf = config();
         })
         .catch(err=>{
             reject("[getProdServer] não resolvido finalizado...", err);
+=======
+        then(response=>{
+            console.log("[getProdServer] resolvido finalizado...", response);
+            resolve(response)
+        })
+        .catch(err=>{
+            console.log("[getProdServer] não resolvido finalizado...", err);
+            reject(err);
+>>>>>>> cdac72819cd0eee892270f03a1be632413e875c4
         });
 
     });
@@ -68,11 +82,21 @@ const $conf = config();
  */
 
 export default function carregarProdutos(pagination){
+<<<<<<< HEAD
   
     return new Promise((resolve, reject)=>{
         getProdServer(pagination).
         then(response=>{
             var produtos = response;
+=======
+    console.log("[carregarProdutos] inicializando...");
+    return new Promise((resolve, reject)=>{
+        getProdServer(pagination).
+        then(response=>response.json()).
+        then(response=>{
+            var produtos = response;
+            console.log(produtos);
+>>>>>>> cdac72819cd0eee892270f03a1be632413e875c4
             var ret = [];//retorno
             for(var [key, value] of Object.entries(produtos)){//correndo o Json retorno 
                 if(produtos.length>0){
@@ -92,6 +116,11 @@ export default function carregarProdutos(pagination){
         catch(e=>reject(e));//fim de getProdServer.then()
 
     });
+<<<<<<< HEAD
 
+=======
+    
+    console.log("[carregarProdutos] finalizado...");
+>>>>>>> cdac72819cd0eee892270f03a1be632413e875c4
 }
 

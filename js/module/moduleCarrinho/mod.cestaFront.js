@@ -4,13 +4,21 @@ import alertar from "../alertar/mod.alertar.js";
 var $conf = config();
 
 export default function cesta(){
+<<<<<<< HEAD
     
+=======
+    console.log("[cesta] inicializando...");
+>>>>>>> cdac72819cd0eee892270f03a1be632413e875c4
     function hide(){
         $(".expo-lista-compra").hide("slow");
         return(this);
     }
     function show(){
+<<<<<<< HEAD
         
+=======
+        console.log("[cesta().show()] inicializando ...");
+>>>>>>> cdac72819cd0eee892270f03a1be632413e875c4
         /**
          * carregarTemplateCesta()
          * Function responsavel por verificar se na pagina já foi carregado a estrutura da cesta de compras
@@ -32,7 +40,11 @@ export default function cesta(){
                             location.
                             href = 
                                 config().
+<<<<<<< HEAD
                                 baseUrl()+"./endereco.html"
+=======
+                                baseUrl()+"/endereco.html"
+>>>>>>> cdac72819cd0eee892270f03a1be632413e875c4
                             ;
 
                             });
@@ -54,7 +66,11 @@ export default function cesta(){
                 $cesta.
                 show("slow");
                 sinc();
+<<<<<<< HEAD
                 
+=======
+                console.log("[cesta().show()] finalizando ...");
+>>>>>>> cdac72819cd0eee892270f03a1be632413e875c4
         
         })
         
@@ -65,7 +81,11 @@ export default function cesta(){
         $(".expo-body-lista-compra").html("");
     }
     function sinc(){// apenas adiciona produtos vindos do servidor para sincronia com o servidor sem enviar para o servidor
+<<<<<<< HEAD
         
+=======
+        //console.log(produto.todos[id]);
+>>>>>>> cdac72819cd0eee892270f03a1be632413e875c4
             let $loading =$("<div/>", {class:"spinner-grow text-primary text-center m-auto ", role:'status', style:"width:65px;hight:65px;"})
                 .append($("<span/>",{class:"sr-only"}).append("Carregando..."))
             ;
@@ -82,17 +102,25 @@ export default function cesta(){
             btnReload .remove();
             $(".expo-body-lista-compra").append($loading);
             carrinho.listaDeCompras().then(e=>{
+<<<<<<< HEAD
                 
                 
                 if((e.cart.length)>0){
                     
                     $('.btn-f-compra').attr("disabled",false);
                     $.each(e.cart, function(key, val){
+=======
+                //console.log(e)
+                var totalCompra = 0.0;
+                if((Object.keys(e).length)>0){
+                    $.each(e, function(key, val){
+>>>>>>> cdac72819cd0eee892270f03a1be632413e875c4
                         // cesta.sinc(val.productId,val.quantity,val.quantity, val.value);
                         let id = val.productId;
                         let nome  = val.name;
                         let quantidade = val.quantity;
                         let tamanho = val.size;
+<<<<<<< HEAD
                         let valor = parseFloat(val.value)+parseFloat(val.freight);
                         let $srcImg;
                         try {
@@ -108,6 +136,14 @@ export default function cesta(){
                         let $img = $("<img/>",
                             {
                                 "src":$srcImg,
+=======
+                        let valor = val.value;
+                        
+                        let $row  = $("<tr/>",{"id":"item-"+id});
+                        let $img = $("<img/>",
+                            {
+                                //"src":((produto.todos[id].img[0]!="")?produto.todos[id].img[0]:'8'),
+>>>>>>> cdac72819cd0eee892270f03a1be632413e875c4
                                 "class":"img-fluid expo-img-aux"
                             }
                         );
@@ -144,17 +180,30 @@ export default function cesta(){
                                         remove( $(this).attr("id") ).
                                         then(e=>{
                                             alertar(e);
+<<<<<<< HEAD
                                             
                                             sinc();
                                         }).catch(e=>{
                                             alertar(e);
                                             console.error(e);
+=======
+                                            console.log(e);
+                                            sinc();
+                                        }).catch(e=>{
+                                            alertar(e);
+                                            console.log(e);
+>>>>>>> cdac72819cd0eee892270f03a1be632413e875c4
                                         })
                                     }
                             }).
                             append("X")
+<<<<<<< HEAD
                         
                         
+=======
+                        totalCompra+=valor*quantidade;
+                        //TotalCompra(id,(valor*quantidade));
+>>>>>>> cdac72819cd0eee892270f03a1be632413e875c4
                         $("#"+id).addClass("destaque");//marca produto adicionado
                         let html = $row.
                         append( 
@@ -170,8 +219,14 @@ export default function cesta(){
                             
                 }
                 //cesta vazia
+<<<<<<< HEAD
                 else{
                     $('.btn-f-compra').attr("disabled",true);//se a cesta estver vasia desabilita o botão de continuar compra
+=======
+                else if((Object.keys(e).length)<1){
+                    console.log("Cesta vazia");
+
+>>>>>>> cdac72819cd0eee892270f03a1be632413e875c4
                     let cestaVazia = 
                     $("<div/>",{class:"lead mt-5 text-center", style:"width:160%"}).
                     append("Sua cesta de compra ainda esta vazia :(");
@@ -180,12 +235,21 @@ export default function cesta(){
                     append(cestaVazia);
                     $loading.remove();//remove carregamento depois de adicionar produtos
                 }
+<<<<<<< HEAD
                 return e.total;
                 
             }).
             then(totalCompra=>{$(".expo-total-compra").text(totalCompra.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }))}).
             catch(e=>{
                 console.error(e);
+=======
+                return totalCompra;
+                
+            }).
+            then(totalCompra=>{$(".expo-total-compra").text(totalCompra)}).
+            catch(e=>{
+                console.log(e);
+>>>>>>> cdac72819cd0eee892270f03a1be632413e875c4
                 
                 $(".expo-body-lista-compra").append(btnReload);
                 $(".loading-cesta").remove();//remove carregamento depois de adicionar produtos
@@ -193,7 +257,11 @@ export default function cesta(){
             
             
     }
+<<<<<<< HEAD
 
+=======
+    console.log("[cesta] finalizado...");
+>>>>>>> cdac72819cd0eee892270f03a1be632413e875c4
     return {
         hide,
         show,

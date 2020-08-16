@@ -75,7 +75,11 @@
             usuario().login(email, senha).then(e=>{
                 if(e){
                     //login sucesso
+<<<<<<< HEAD
                     window.location.href = ($conf.indexPage());
+=======
+                    abrirUrl ($conf.indexPage());
+>>>>>>> cdac72819cd0eee892270f03a1be632413e875c4
                 }else{
                     //login falhou
                 }

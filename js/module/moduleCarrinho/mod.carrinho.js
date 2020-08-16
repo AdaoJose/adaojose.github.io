@@ -11,7 +11,11 @@ var carrinho = {
      */
     remove:function(id){
         return new Promise((resolve, reject)=>{
+<<<<<<< HEAD
             
+=======
+            console.log("[carrinho.remove] inicializando...");
+>>>>>>> cdac72819cd0eee892270f03a1be632413e875c4
             let $conf  = config();
 
             let myHeaders = new Headers();
@@ -32,6 +36,7 @@ var carrinho = {
             fetch(uri, requestOptions)
             .then(response => response.json())
             .then(result =>{
+<<<<<<< HEAD
             
 
                 $("#"+id).
@@ -40,6 +45,17 @@ var carrinho = {
                 resolve("Este item foi removido");
             })
             .catch(error => {
+=======
+                // console.log(result);
+
+                $("#"+id).
+                removeClass("destaque");//remove destaque do produto removido
+                console.log("[carrinho.remove] finalizado...");
+                resolve("Este item foi removido");
+            })
+            .catch(error => {
+                console.log("[carrinho.remove] finalizado...");
+>>>>>>> cdac72819cd0eee892270f03a1be632413e875c4
                 if(!navigator.onLine){
                     reject("Falha! Você não tem uma conexão.");
                 }else{
@@ -59,6 +75,7 @@ var carrinho = {
      * @param _HTMLprodTag pode ser $(this) ou this ou até $('.btn_add_to_cart')
     */
     add:_HTMLprodTag=>{
+<<<<<<< HEAD
         // caso aindo não tenha estrutura adiciono a padrão
 
         function carregarTemplate(){
@@ -443,6 +460,263 @@ var carrinho = {
         .catch((val)=>{
             alertar("Erro ao carregar Template");
         })
+=======
+        // console.log($(_HTMLprodTag).attr('data-id'));
+        // caso aindo não tenha estrutura adiciono a padrão
+        if(!$("#addCarrinho").length){
+            $.get("./template/carrinhoAdd.tpl", function(data){
+                $("body").append(data);
+            });
+        }
+
+        var paramHtml = $(_HTMLprodTag);
+        var botaoConfirmar = $(".addCarrinhoConfirmar");//botão clicado ao finalizar a compra
+        
+        /** informações do produto é adicionado no botão */
+        botaoConfirmar.
+        attr("data-prod-id", paramHtml.attr("data-id"));
+
+        botaoConfirmar.
+        attr("data-prod-nome", paramHtml.attr("data-nome"));
+
+        //diz ao objeto ao carrinho qual a categoria deste produto
+        $(".addCarrinhoBody").
+        attr("data-categoria", paramHtml.attr("data-categoria"));
+
+        let txtPreco  = ()=>{
+                    let obj = JSON.parse( paramHtml.attr("data-tamanho-valor"));
+                    let vp = parseFloat(
+                                obj[
+                                    Object.keys(obj)[0]//pega o primeiro objto
+                                ].valor
+                            );
+
+                    botaoConfirmar.attr("data-prod-valor", vp);
+
+                    botaoConfirmar.attr("data-prod-tamanho", Object.keys(obj)[0]); 
+
+                    botaoConfirmar.attr("data-quantidade", 1);
+                    
+                    return Object.keys(obj)[0]+" "+vp.toLocaleString('pt-BR',{style:"currency", currency:"BRL"});
+                }
+        $(".addCarrinhoPreco").text(txtPreco);
+        $("#addCarrinhoTitulo").html(paramHtml.attr("data-nome"));
+        let carregando  = $("<div/>",{
+            "class":"text-center"
+        })
+        .append($("<div/>",{
+                "class":"spinner-border text-primary",
+                "role":"status"
+            })
+            .append($("<span/>",{
+                    "class":"sr-only"
+                })
+                .append("Loading..."))
+        );
+
+
+        let $divProduto = $("<div/>",{"class":"row"});
+        let $divImg = $("<div>",{"class":"col-12 text-center"});
+        let $img = $("<img/>",{
+            "src":()=>{
+                return(paramHtml.attr("data-img").split(',')[0]);
+            },
+            "class":"img-fluid addCarrinhoImg"
+           });
+        
+
+        let htmlExpoProd
+        =
+         $divProduto.append(
+             $divImg
+                 .append(
+                    $img
+                 )
+            ,$("<div/>",{"class":"col-12 addCarrinhoNome border lead text-primary"})
+             .append(
+                      //paramHtml.attr("data-nome"),
+                      //$("<small>",{"class":"text-small float-right"}).append(paramHtml.attr("data-estoque") + " disponiveis"),
+                      $("<div/>",{"class":"col-12  addCarrinhoDescricao mb-3"}).append(paramHtml.attr("data-descricao")),
+                      $("<div>",{"class":"col-12 addCarrinhoAvaliacao text-primary"}).append(()=>{
+                          let avaliacao = "";
+                          if(paramHtml.attr("data-tot-avaliacao")==0){
+                              return $("<span/>",{"class":"text-dark"}).append("Item não availado");
+                          }
+                          let nota = parseFloat(paramHtml.attr("data-nota"));
+                          for(var i=1;i<=Math.floor(nota); i++){
+                              avaliacao+="<i class='fas fa-star'></i>";
+                          }
+                          if((nota-Math.floor(nota))>0.2 && nota<5){
+                            avaliacao+='<i class="fas fa-star-half-alt"></i>';
+                          }
+                          return avaliacao;
+                      }, 
+                      $("<span>",{"class":"text-primary"}).append(" ("+paramHtml.attr("data-tot-avaliacao")+")"))
+                    )
+            ,$("<tr>")
+             ,$("<div/>",{"class":"input-group mb-3 m-auto p-2"})
+             .append(
+                 $("<div/>",{"class":"input-group-prepend"})
+                  .append(
+                      $("<span>",{"class":"input-group-text bg-primary text-light"})
+                      .append("Tamanho   ")
+                 ),
+
+                 $("<select/>",{
+                     "class":"form-control addCarrinhoSelectTamanho",
+                     "arial-label":"Escolha o tamanho do produto",
+                     change:function(){
+                         //console.log($(this).children("option:selected").attr("data-cor"));
+                        let option = "";// usado para guardar as options dos selects
+
+                        let cor  = 
+                        JSON.
+                        parse( 
+                            $(this).
+                            children("option:selected").
+                            attr("data-cor")
+                        );
+
+                        Object.entries(cor).forEach(([cor, quantia])=>{
+                            option+="<option data-max="+quantia+" value="+cor+"> "+cor+ "</option>";
+                        });
+
+                        $(".addCarrinhoSelectCor").
+                        html("").
+                        html(option);
+    
+                        $(".addCarrinhoPreco").
+                        text($(this).
+                            children("option:selected").
+                            text());
+                     }
+                 })
+                 .append(()=>{
+                     let option = "";
+                     let obj = JSON.parse( paramHtml.attr("data-tamanho-valor"));
+                     console.log(obj);
+                     for (var [key, value] of Object.entries(obj)) {
+
+                        let vp = 
+                        parseFloat(value.valor);
+
+                        let cor_quantidade = 
+                        JSON.
+                        stringify(value.cor_quantidade);
+
+                        option+=
+                            "<option data-cor="+
+                            cor_quantidade+
+                            " value="+key+"> "+key+" "+vp.toLocaleString('pt-BR',{ style: 'currency', currency: 'BRL' })+"</option>";
+                         console.log(key);
+                         console.log(value);
+                         
+                     }
+                    // for (var property in Object.values(obj)){
+                    //     Object.entries(obj[property]).forEach(([key, value]) => { 
+                    //         let vp = parseFloat(value.valor);
+                    //         let cor_quantidade = JSON.stringify(value.cor_quantidade);
+                    //         option+="<option data-cor="+cor_quantidade+" value="+key+"> "+key+" "+vp.toLocaleString('pt-BR',{ style: 'currency', currency: 'BRL' })+"</option>";
+                    //     })
+                       
+                    //   }
+                      return(option);
+                 })
+             )
+            ,$("<div/>",{"class":"input-group mb-3 m-auto p-2"})
+             .append(
+                 $("<div/>",{"class":"input-group-prepend"})
+                  .append(
+                      $("<span>",{"class":"input-group-text bg-primary text-light"})
+                      .append("Cor")
+                 ),
+                 $("<select/>",{ 
+                     "class":"form-control addCarrinhoSelectCor",
+                     "arial-label":"Escolha a cor do produto"
+                 })
+                 .append(()=>{
+                    let option = "";
+                    let obj = JSON.parse( paramHtml.attr("data-tamanho-valor"));
+
+                    //como o primeiro item a ser pego é o da posição zero pego a cor da mesma posição
+                    console.log(obj);
+                    
+                    let objPrimeiraPosicao = obj[Object.keys(obj)[0]];
+                    
+                    let x  = 0 ;
+                    Object.entries(objPrimeiraPosicao.cor_quantidade).forEach(([cor, quantia])=>{
+                        
+                        if(x==0) botaoConfirmar.attr("data-prod-cor", cor);
+                        
+                        option+="<option data-max="+quantia+" value="+cor+"> "+cor+ "</option>";
+                        x++;
+                    })
+                    
+                      
+                     return(option);
+                 })
+             )
+             ,$("<div/>",{"class":"input-group mb-3 m-auto p-2"})
+             .append(
+                 $("<div/>",{"class":"input-group-prepend"})
+                  .append(
+                      $("<span>",{"class":"input-group-text bg-primary text-light"})
+                      .append("Quantidade")
+                 ),
+                 $("<input/>",{
+                     "class":"form-control",
+                     "arial-label":"Escolha quantos produtos deseja comprar.",
+                     "type":"number",
+                     "value":1,
+                     "min":1,
+                     "max":paramHtml.attr("data-estoque"),
+                     focusout:function(){
+
+                         let maxProd = 
+                         parseInt(
+                             $('.addCarrinhoSelectCor :selected').
+                             attr("data-max")
+                         );
+
+                         let valDigitado = 
+                         parseInt(this.value);
+
+                         if(valDigitado > maxProd){//verifico se há a quantidade de produto disponível suficiente
+                            alertar("Desculpe há apenas "+maxProd+" produtos disponíveis.");
+
+                            $(this).
+                            focus();
+                         }else{
+
+                            botaoConfirmar
+                            .attr("data-quantidade", valDigitado);
+                         }
+                     }
+                 })
+             )
+            ,$("<tr/>",{"class":"mt-5"})
+            ,$("<div/>",{"class":"col-12 border lead"})
+             .append("Valor de envio: R$"+paramHtml.attr("data-custo-envio"))
+            
+  
+  
+         );
+           
+        $('#addCarrinho').modal('show');
+        $(".addCarrinhoBody").html("");
+        $(".addCarrinhoBody").html(carregando);
+        setTimeout(()=>{
+            $(".addCarrinhoBody").html("").html(htmlExpoProd);
+        },2000);
+        botaoConfirmar.
+        off("click").
+        click(
+            function(){
+                console.log("[.addCarrinhoConfirmar] clicado, ", "chamando carrinho.confirmar(this)");
+                carrinho.confirmar(botaoConfirmar);
+            }
+        );
+>>>>>>> cdac72819cd0eee892270f03a1be632413e875c4
     },
     /**
      * @author Adão José
@@ -470,6 +744,10 @@ var carrinho = {
             cor: $(self).attr("data-prod-cor"),
             quantidade: $(self).attr("data-quantidade")
         }  
+<<<<<<< HEAD
+=======
+        console.log(produto.cor);
+>>>>>>> cdac72819cd0eee892270f03a1be632413e875c4
         var raw = JSON.stringify({ 
             user:JSON.parse(localStorage.getItem("login")),
             "products":{"id":produto.id,"quantity":produto.quantidade,"size":produto.tamanho, "color":produto.cor }
@@ -502,9 +780,16 @@ var carrinho = {
             })
         }).
         then((d)=>{
+<<<<<<< HEAD
             if(d.status=='error'){//if return erro on server
                 alertar("Erro ao adicionar a lista de compras. Estamos trabalhando para resolver!");
                 console.error(d);
+=======
+            //console.log(d);
+            if(d.status=='error'){//if return erro on server
+                alertar("Erro ao adicionar a lista de compras. Estamos trabalhando para resolver!");
+                console.log(d);
+>>>>>>> cdac72819cd0eee892270f03a1be632413e875c4
             }else{
                 alertar(produto.nome+" adicionado a lista de compras!");
                 $(".cat-carrinho[data-id="+produto.id+"]").removeClass("text-primary").addClass("text-success");
@@ -551,6 +836,10 @@ var carrinho = {
             return fetch(urlServer , requestOptions).
                     then(response => response.json()).
                     then(e=>{
+<<<<<<< HEAD
+=======
+                        //console.log(e);
+>>>>>>> cdac72819cd0eee892270f03a1be632413e875c4
                         //Servidor retornou erro
                         if(e.status=="error"){
                             console.error("[carrinho.listaDeCompras] Error..." , e);
@@ -558,6 +847,10 @@ var carrinho = {
                         }
                         //cesta conseguiu pegar produtos
                         else{
+<<<<<<< HEAD
+=======
+                            console.log("[carrinho.listaDeCompras] produtoscarregados", e);
+>>>>>>> cdac72819cd0eee892270f03a1be632413e875c4
                             resolve(e);
                         }
                             

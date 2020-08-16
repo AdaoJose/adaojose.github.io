@@ -151,8 +151,12 @@ function cadastrar(nome, email, senha){
         method: 'POST',
         headers: myHeaders,
         body: raw,
+<<<<<<< HEAD
         mode:'cors',
         
+=======
+        redirect: 'follow'
+>>>>>>> cdac72819cd0eee892270f03a1be632413e875c4
     };
 
     console.log("[Cadastro de usuario] init fetch...");
@@ -201,6 +205,7 @@ function cadastrar(nome, email, senha){
         return false;
     });
 }
+<<<<<<< HEAD
 
 /**
  * logado();
@@ -222,6 +227,10 @@ function logado(){
 
 function usuario(){
     return {login, cadastrar, logado}
+=======
+function usuario(){
+    return {login, cadastrar}
+>>>>>>> cdac72819cd0eee892270f03a1be632413e875c4
 }
 
 // exporto as funções de usuario como modulos

@@ -1,0 +1,14 @@
+#map { 
+    height: 80vh;
+    width: 50vw;
+    align-self: center;
+}
+h1{
+    
+}
+body{
+    display: flex;
+    flex-flow: row wrap;
+    justify-content: center;
+    height: 100%;
+}

@@ -13,7 +13,7 @@ navigator.geolocation.getCurrentPosition((location) =>{
     
     var popup = L.popup()
     .setLatLng([a,b])
-    .setContent("Aguarde seu mototista.")
+    .setContent("Aguarde seu mototista. <a href='#teste.html'>ir</a>")
     .openOn(map);
 
     map.on('click', e=>{ 

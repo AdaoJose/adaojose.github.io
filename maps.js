@@ -9,7 +9,18 @@ navigator.geolocation.getCurrentPosition((location) =>{
         maxZoom: 19,
         attribution: '© OpenStreetMap'
     }).addTo(map);
+    var marker = L.marker([a,b]).addTo(map);
+    
+    var popup = L.popup()
+    .setLatLng([a,b])
+    .setContent("Aguarde seu mototista.")
+    .openOn(map);
 
+    map.on('click', e=>{ 
+        // alert("You clicked the map at " + e.latlng) 
+        console.log(e);
+        var marker = L.marker([e.latlng.lat, e.latlng.lng]).addTo(map);
+    });
 });
 
 

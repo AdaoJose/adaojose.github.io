@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fatorial</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-gH2yIJqKdNHPEq0n4Mqa/HGKIhSkIHeL5AyhkYV8i59U5AR6csBvApHHNl/vI1Bx" crossorigin="anonymous">
+</head>
+<body >
+    <header class="container">
+        <h1>Fatorial</h1>
+        <h2>Calculando o fatorial de um número</h2>
+    </header>
+    <section class="container">
+        <article>
+            Para calcular o fatorial de um numero basta informar o numero que deseja encontrar o fatorial e logo em seguida clicar em próximo.
+            o resultado será atribuido logo a baixo da caixa de entrada!
+            <div class="p-5 row">
+                <input type="number" name="inputNumber" id="inputNumber" class="form-control col" placeholder="Digie aqui o numero á ser calculado o fatorial">
+                <button class="btn btn-primary col" id="proximo">Próximo</button>
+                <div class=" text-primary pt-5 col-12 text-center" id="resultado"></div>
+            </div>
+            
+        </article>
+    </section>
+
+    <script src="fatorial.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-A3rJD856KowSb7dwlZdYEkO39Gagi7vIsF0jrRAoQmDKKtQBHUuLZ9AsSv4jD4Xa" crossorigin="anonymous"></script>
+    <script>
+        btn = document.getElementById("proximo");
+        btn.addEventListener("click",()=>{
+            
+            var numero = document.getElementById("inputNumber").value;
+            if(numero == ""){
+                return
+            }
+            resultado = document.getElementById("resultado").innerHTML = "O resultado aproximado do fatorial de "+numero+" é: " +fatorial(numero);
+        })
+    </script>
+</body>
+</html>

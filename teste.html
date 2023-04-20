@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+
+    <form action="" method="post">
+        <input type="text" name="produto" placeholder="Nome do produto"  id="produto">
+        <input type="text" name="valor" id="valor" placeholder="valor">
+        <input type="text" name="codigo" id="codigo" placeholder="Codigo">
+        <input type="text" name="peso" id="peso" placeholder="Peso">
+        <input type="text" name="descricao" id="descricao" placeholder="Descricão">
+    </form>
+    <div id="barcode-scanner"></div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@ericblade/quagga2/dist/quagga.min.js"></script>
+    <script>
+        Quagga.init({
+            inputStream: {
+                name: "Live",
+                type: "LiveStream",
+                target: document.querySelector("#barcode-scanner")
+            },
+            decoder: {
+                readers: ["ean_reader", "code_128_reader"]
+            }
+        }, function (err) {
+            if (err) {
+                console.log(err);
+                return;
+            }
+            console.log("QuaggaJS is ready to start scanning!");
+            Quagga.start();
+        });
+
+        Quagga.onDetected(function (result) {
+            console.log("Barcode detected and decoded:", result);
+        });
+
+    </script>
+</body>
+
+</html>
